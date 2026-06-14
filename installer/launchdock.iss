@@ -1,6 +1,7 @@
 #define MyAppName "LaunchDock"
 #define MyAppPublisher "Dylanliiiii"
 #define MyAppURL "https://github.com/Dylanliiiii/LaunchDock"
+#define MyAppExeName "LaunchDock.exe"
 
 #ifndef AppVersion
 #define AppVersion "1.0.0"
@@ -19,29 +20,32 @@
 #endif
 
 [Setup]
-AppId={{8B536EE7-4F0E-4F13-8A24-469AB5F29D88}
+AppId={45578E15-2C5C-4378-809F-C9F1665B663B}
 AppName={#MyAppName}
 AppVersion={#AppVersion}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
-AppSupportURL={#MyAppURL}/issues
-AppUpdatesURL={#MyAppURL}/releases
+AppSupportURL={#MyAppURL}
+AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppName}
-DefaultGroupName={#MyAppName}
+UninstallDisplayIcon={app}\{#MyAppExeName}
+ArchitecturesAllowed=x64compatible
+ArchitecturesInstallIn64BitMode=x64compatible
 DisableProgramGroupPage=yes
+PrivilegesRequired=lowest
 OutputDir={#OutputDir}
 OutputBaseFilename=LaunchDock-v{#AppVersion}-windows-setup
 SetupIconFile={#IconPath}
-Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
-PrivilegesRequired=lowest
-ArchitecturesAllowed=x64compatible
-ArchitecturesInstallIn64BitMode=x64compatible
-UninstallDisplayIcon={app}\LaunchDock.exe
 
 [Languages]
-Name: "chinesesimp"; MessagesFile: "compiler:Languages\ChineseSimplified.isl"
+Name: "english"; MessagesFile: "compiler:Default.isl"
+Name: "chinesesimplified"; MessagesFile: "compiler:Languages\ChineseSimplified.isl"
+Name: "french"; MessagesFile: "compiler:Languages\French.isl"
+Name: "german"; MessagesFile: "compiler:Languages\German.isl"
+Name: "japanese"; MessagesFile: "compiler:Languages\Japanese.isl"
+Name: "korean"; MessagesFile: "compiler:Languages\Korean.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
@@ -50,8 +54,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Source: "{#SourceDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{group}\{#MyAppName}"; Filename: "{app}\LaunchDock.exe"
-Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\LaunchDock.exe"; Tasks: desktopicon
+Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
+Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\LaunchDock.exe"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
