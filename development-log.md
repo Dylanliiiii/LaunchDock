@@ -1,5 +1,28 @@
 # Development Log
 
+## 2026-06-15 06:01:54 +08:00
+
+### 修改范围
+
+- GitHub 到 CNB tag 同步
+
+### 涉及文件
+
+- `.github/workflows/sync-cnb.yml`
+- `development-log.md`
+
+### 具体内容
+
+- 在 GitHub Actions 同步流程中新增 tag 同步步骤，使用 GitHub Secret `GIT_PASSWORD` 生成临时 Basic Auth header，将 GitHub 远端 tag 推送到 CNB 镜像仓库。
+- 解决 CNB 仓库代码已同步但页面仍显示 `Tag 0` 的问题；下一次 GitHub push 后应同步已有 `v1.0.0` tag。
+
+### 验证情况
+
+- 已运行 `python -m unittest discover -s tests`，14 个测试全部通过。
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过语法检查。
+- 已确认本地存在 `v1.0.0` tag，且修改前 CNB 远端未返回任何 tag。
+- 本次为日常开发修改，未更新项目版本号。
+
 ## 2026-06-15 05:39:36 +08:00
 
 ### 修改范围

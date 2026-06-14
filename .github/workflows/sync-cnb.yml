@@ -20,3 +20,11 @@ jobs:
             -e PLUGIN_PASSWORD=${{ secrets.GIT_PASSWORD }} \
             -e PLUGIN_FORCE="true" \
             tencentcom/git-sync
+
+      - name: Sync tags to CNB Repository
+        env:
+          CNB_PASSWORD: ${{ secrets.GIT_PASSWORD }}
+        run: |
+          AUTH_HEADER=$(printf "cnb:%s" "$CNB_PASSWORD" | base64 -w 0)
+          git -c "http.https://cnb.cool/.extraheader=Authorization: Basic $AUTH_HEADER" \
+            push https://cnb.cool/DylanLIIIII/LaunchDock.git --tags
