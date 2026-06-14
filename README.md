@@ -55,7 +55,7 @@ python -m pip install pyinstaller
 powershell -ExecutionPolicy Bypass -File scripts\build-windows.ps1 -Version v1.0.0
 ```
 
-打包产物会生成到 `dist/LaunchDock-v1.0.0-windows.zip`。脚本会从 `assets/icon.png` 临时派生 `build/launchdock.ico`，不会覆盖或修改原始图标文件，也不会包含用户本机的启动坞数据。
+打包产物会生成到 `dist/v1.0.0/LaunchDock-v1.0.0-windows.zip`。脚本会从 `assets/icon.png` 临时派生 `build/launchdock.ico`，不会覆盖或修改原始图标文件，也不会包含用户本机的启动坞数据。
 
 如需生成 Windows 安装包，需要先安装 [Inno Setup 6](https://jrsoftware.org/isinfo.php)，然后运行：
 
@@ -63,7 +63,7 @@ powershell -ExecutionPolicy Bypass -File scripts\build-windows.ps1 -Version v1.0
 powershell -ExecutionPolicy Bypass -File scripts\build-installer.ps1 -Version 1.0.0
 ```
 
-安装包会生成到 `dist/LaunchDock-v1.0.0-windows-setup.exe`，适合在 GitHub Release 中提供给普通用户直接安装。压缩包和安装包可以同时上传：压缩包适合免安装使用，安装包适合创建开始菜单、桌面快捷方式和卸载入口。
+安装包会生成到 `dist/v1.0.0/LaunchDock-v1.0.0-windows-setup.exe`，适合在 GitHub Release 中提供给普通用户直接安装。压缩包和安装包可以同时上传：压缩包适合免安装使用，安装包适合创建开始菜单、桌面快捷方式和卸载入口。
 
 ## 发布 Release
 

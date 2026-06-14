@@ -270,8 +270,9 @@ TEXT_EXTRA = {
         "github_link": "GitHub",
         "share_download_link": "分享下载链接",
         "update_placeholder_title": "版本更新",
-        "update_placeholder_desc": "当前还没有检查到新版本。发布 GitHub Release 后，这里会显示版本跨度和发布说明。",
-        "checking_update": "正在检查新版本...",
+        "update_placeholder_desc": "尚未检查更新。启动后会自动检查 GitHub Release，也可以手动点击“检查新版本”。",
+        "checking_update_title": "正在检查更新",
+        "checking_update": "正在检查是否有最新版本...",
         "no_release_title": "暂无发布版本",
         "no_release_desc": "GitHub 仓库还没有发布 Release。之后发布 Release 后即可检查更新。",
         "no_update_title": "已是当前版本",
@@ -279,6 +280,7 @@ TEXT_EXTRA = {
         "update_available_title": "发现新版本",
         "update_available_desc": "可从 v{current} 更新到 {latest}。",
         "update_changelog_title": "新版本改动内容",
+        "empty_release_notes": "该 Release 没有填写发布说明。",
         "update_check_failed_title": "检查更新失败",
         "update_check_failed_desc": "无法连接 GitHub Release，请稍后再试：{error}",
         "open_release_prompt": "是否打开下载页面？",
@@ -373,7 +375,8 @@ TEXT_EXTRA = {
         "github_link": "GitHub",
         "share_download_link": "分享下載連結",
         "update_placeholder_title": "版本更新",
-        "update_placeholder_desc": "目前還沒有檢查到新版本。發布 GitHub Release 後，這裡會顯示版本跨度和發布說明。",
+        "update_placeholder_desc": "尚未檢查更新。啟動後會自動檢查 GitHub Release，也可以手動點擊「檢查新版本」。",
+        "checking_update_title": "正在檢查更新",
         "checking_update": "正在檢查新版本...",
         "no_release_title": "暫無發布版本",
         "no_release_desc": "GitHub 倉庫還沒有發布 Release。之後發布 Release 後即可檢查更新。",
@@ -382,6 +385,7 @@ TEXT_EXTRA = {
         "update_available_title": "發現新版本",
         "update_available_desc": "可從 v{current} 更新到 {latest}。",
         "update_changelog_title": "新版本變更內容",
+        "empty_release_notes": "該 Release 沒有填寫發布說明。",
         "update_check_failed_title": "檢查更新失敗",
         "update_check_failed_desc": "無法連接 GitHub Release，請稍後再試：{error}",
         "open_release_prompt": "是否開啟下載頁面？",
@@ -476,7 +480,8 @@ TEXT_EXTRA = {
         "github_link": "GitHub",
         "share_download_link": "Share Download Link",
         "update_placeholder_title": "Version Updates",
-        "update_placeholder_desc": "No new version has been detected yet. After a GitHub Release is published, version changes and release notes will appear here.",
+        "update_placeholder_desc": "Updates have not been checked yet. LaunchDock checks GitHub Releases after startup, or you can check manually.",
+        "checking_update_title": "Checking for Updates",
         "checking_update": "Checking for updates...",
         "no_release_title": "No Releases Yet",
         "no_release_desc": "This GitHub repository has no Release yet. Update checks will work after a Release is published.",
@@ -485,6 +490,7 @@ TEXT_EXTRA = {
         "update_available_title": "New Version Available",
         "update_available_desc": "Update from v{current} to {latest}.",
         "update_changelog_title": "Release Notes",
+        "empty_release_notes": "This Release does not include release notes.",
         "update_check_failed_title": "Update Check Failed",
         "update_check_failed_desc": "Could not connect to GitHub Releases. Try again later: {error}",
         "open_release_prompt": "Open the download page?",
@@ -579,7 +585,8 @@ TEXT_EXTRA = {
         "github_link": "GitHub",
         "share_download_link": "ダウンロードリンクを共有",
         "update_placeholder_title": "バージョン更新",
-        "update_placeholder_desc": "まだ新しいバージョンは検出されていません。GitHub Release を公開すると、ここにバージョン差分とリリースノートが表示されます。",
+        "update_placeholder_desc": "まだ更新を確認していません。起動後に GitHub Release を自動確認します。手動で確認することもできます。",
+        "checking_update_title": "更新を確認中",
         "checking_update": "新しいバージョンを確認しています...",
         "no_release_title": "リリースはまだありません",
         "no_release_desc": "GitHub リポジトリにはまだ Release がありません。Release 公開後に更新確認が利用できます。",
@@ -588,6 +595,7 @@ TEXT_EXTRA = {
         "update_available_title": "新しいバージョンがあります",
         "update_available_desc": "v{current} から {latest} に更新できます。",
         "update_changelog_title": "新バージョンの変更内容",
+        "empty_release_notes": "この Release にはリリースノートがありません。",
         "update_check_failed_title": "更新確認に失敗しました",
         "update_check_failed_desc": "GitHub Release に接続できません。後でもう一度お試しください：{error}",
         "open_release_prompt": "ダウンロードページを開きますか？",
@@ -682,7 +690,8 @@ TEXT_EXTRA = {
         "github_link": "GitHub",
         "share_download_link": "다운로드 링크 공유",
         "update_placeholder_title": "버전 업데이트",
-        "update_placeholder_desc": "아직 새 버전을 확인하지 못했습니다. GitHub Release를 게시하면 버전 변경과 릴리스 노트가 여기에 표시됩니다.",
+        "update_placeholder_desc": "아직 업데이트를 확인하지 않았습니다. 시작 후 GitHub Release를 자동으로 확인하거나 수동으로 확인할 수 있습니다.",
+        "checking_update_title": "업데이트 확인 중",
         "checking_update": "새 버전을 확인하는 중...",
         "no_release_title": "아직 릴리스가 없습니다",
         "no_release_desc": "GitHub 저장소에 아직 Release가 없습니다. Release 게시 후 업데이트 확인을 사용할 수 있습니다.",
@@ -691,6 +700,7 @@ TEXT_EXTRA = {
         "update_available_title": "새 버전 발견",
         "update_available_desc": "v{current}에서 {latest}(으)로 업데이트할 수 있습니다.",
         "update_changelog_title": "새 버전 변경 내용",
+        "empty_release_notes": "이 Release에는 릴리스 노트가 없습니다.",
         "update_check_failed_title": "업데이트 확인 실패",
         "update_check_failed_desc": "GitHub Release에 연결할 수 없습니다. 나중에 다시 시도하세요: {error}",
         "open_release_prompt": "다운로드 페이지를 열까요?",
@@ -785,7 +795,8 @@ TEXT_EXTRA = {
         "github_link": "GitHub",
         "share_download_link": "Compartir enlace",
         "update_placeholder_title": "Actualizaciones",
-        "update_placeholder_desc": "Aún no se ha detectado una nueva versión. Cuando se publique un GitHub Release, aquí aparecerán el cambio de versión y las notas.",
+        "update_placeholder_desc": "Aún no se han comprobado actualizaciones. LaunchDock revisa GitHub Releases al iniciar, o puedes comprobar manualmente.",
+        "checking_update_title": "Buscando actualizaciones",
         "checking_update": "Buscando actualizaciones...",
         "no_release_title": "Sin versiones publicadas",
         "no_release_desc": "Este repositorio de GitHub todavía no tiene Release. La comprobación funcionará cuando se publique una.",
@@ -794,6 +805,7 @@ TEXT_EXTRA = {
         "update_available_title": "Nueva versión disponible",
         "update_available_desc": "Puedes actualizar de v{current} a {latest}.",
         "update_changelog_title": "Cambios de la nueva versión",
+        "empty_release_notes": "Este Release no incluye notas de publicación.",
         "update_check_failed_title": "No se pudo buscar actualización",
         "update_check_failed_desc": "No se pudo conectar a GitHub Releases. Inténtalo más tarde: {error}",
         "open_release_prompt": "¿Abrir la página de descarga?",
@@ -956,6 +968,8 @@ def fetch_latest_release() -> dict[str, object]:
         if exc.code == 404:
             return {"status": "none"}
         raise
+    if not isinstance(data, dict):
+        raise ValueError("更新信息格式不正确。")
     tag_name = str(data.get("tag_name") or "")
     html_url = str(data.get("html_url") or GITHUB_RELEASES_URL)
     body = str(data.get("body") or "").strip()
@@ -1316,12 +1330,15 @@ class LaunchInterface(QWidget):
         edit_button.clicked.connect(lambda _=False, p=project, l=link: self.app_window.edit_link(p, l))
         delete_button = TransparentToolButton(FluentIcon.DELETE, row)
         delete_button.clicked.connect(lambda _=False, p=project, l=link: self.app_window.delete_link(p, l))
+        launch_button = TransparentToolButton(FluentIcon.PLAY_SOLID, row)
+        launch_button.clicked.connect(lambda _=False, l=link: self.app_window.launch_link(l))
         switch = SwitchButton(row)
         switch.setOnText("")
         switch.setOffText("")
         set_switch_checked_without_animation(switch, link.default_open)
         switch.checkedChanged.connect(lambda checked, p=project, l=link: self.app_window.toggle_link(p, l, checked))
 
+        layout.addWidget(launch_button)
         layout.addWidget(edit_button)
         layout.addWidget(delete_button)
         layout.addWidget(switch)
@@ -1450,7 +1467,7 @@ class AboutInterface(QWidget):
 
     def set_checking(self) -> None:
         self.check_button.setEnabled(False)
-        self.update_title.setText(self.app_window.text("check_update"))
+        self.update_title.setText(self.app_window.text("checking_update_title"))
         self.update_body.setText(self.app_window.text("checking_update"))
 
     def set_update_result(self, title: str, body: str) -> None:
@@ -1591,6 +1608,7 @@ class LaunchDockApp(FluentWindow):
 
         self.load_data()
         self.switchTo(self.about_interface)
+        QTimer.singleShot(0, lambda: self.navigationInterface.expand(False))
         QTimer.singleShot(1200, lambda: self.check_for_updates(manual=False))
 
     def has_launch_dock(self) -> bool:
@@ -1647,15 +1665,14 @@ class LaunchDockApp(FluentWindow):
         if self.update_check_running:
             return
         self.update_check_running = True
-        if manual:
-            self.about_interface.set_checking()
+        self.about_interface.set_checking()
 
         def worker() -> None:
             try:
                 result = fetch_latest_release()
                 result["manual"] = manual
                 self.update_signals.checked.emit(result)
-            except (HTTPError, URLError, OSError, json.JSONDecodeError) as exc:
+            except (HTTPError, URLError, OSError, json.JSONDecodeError, ValueError) as exc:
                 self.update_signals.failed.emit({"manual": manual, "error": str(exc)})
 
         Thread(target=worker, daemon=True).start()
@@ -1672,7 +1689,7 @@ class LaunchDockApp(FluentWindow):
 
         latest = str(result.get("tag_name") or "")
         release_url = str(result.get("html_url") or GITHUB_RELEASES_URL)
-        body = str(result.get("body") or "").strip() or self.text("update_placeholder_desc")
+        body = str(result.get("body") or "").strip() or self.text("empty_release_notes")
         if bool(result.get("is_newer")):
             title = self.text("update_available_desc", current=__version__, latest=latest)
             content = f"{self.text('update_changelog_title')}\n{body}"
@@ -1697,8 +1714,8 @@ class LaunchDockApp(FluentWindow):
         self.update_check_running = False
         manual = bool(result.get("manual"))
         message = self.text("update_check_failed_desc", error=result.get("error", ""))
+        self.about_interface.set_update_result(self.text("update_check_failed_title"), message)
         if manual:
-            self.about_interface.set_update_result(self.text("update_check_failed_title"), message)
             self.show_warning(self.text("update_check_failed_title"), message)
 
     def load_data(self) -> None:
@@ -1721,6 +1738,7 @@ class LaunchDockApp(FluentWindow):
         valid_project_ids = {project.id for project in self.projects}
         self.selected_project_ids.intersection_update(valid_project_ids)
         self.collapsed_project_ids.intersection_update(valid_project_ids)
+        self.collapsed_project_ids.update(valid_project_ids)
         if self.link_manage_project_id not in valid_project_ids:
             self.link_manage_project_id = None
         self.selected_link_ids_by_project = {
@@ -1869,6 +1887,7 @@ class LaunchDockApp(FluentWindow):
             self.show_error(self.text("create_failed"), str(exc))
             return
         self.projects = self.storage.list_projects()
+        self.collapsed_project_ids.add(project.id)
         self.launch_interface.refresh(self.projects)
         InfoBar.success(self.text("create_success"), self.text("project_created", name=project.name), position=InfoBarPosition.TOP_RIGHT, parent=self)
 
@@ -1999,6 +2018,13 @@ class LaunchDockApp(FluentWindow):
             open_target(link.url)
         InfoBar.success(self.text("launch_done_title"), self.text("launch_done_desc", count=len(targets)), position=InfoBarPosition.TOP_RIGHT, parent=self)
 
+    def launch_link(self, link: Link) -> None:
+        if not link.url.strip() or not is_valid_target(link.url):
+            self.show_warning(self.text("invalid_targets_title"), self.text("invalid_targets_desc", names=link.name))
+            return
+        open_target(link.url)
+        InfoBar.success(self.text("launch_done_title"), self.text("launch_done_desc", count=1), position=InfoBarPosition.TOP_RIGHT, parent=self)
+
     def validate_link_values(self, values: dict[str, object]) -> bool:
         if not str(values["name"]).strip():
             self.show_warning(self.text("need_name_title"), self.text("link_name_required"))
@@ -2041,19 +2067,35 @@ def clear_layout(layout: QVBoxLayout | QHBoxLayout) -> None:
 
 
 def looks_like_url(value: str) -> bool:
-    parsed = urlparse(value.strip())
+    text = normalized_target_text(value)
+    if text is None:
+        return False
+    parsed = urlparse(text)
     return parsed.scheme in {"http", "https", "file"} and bool(parsed.netloc or parsed.path)
 
 
-def is_valid_target(value: str) -> bool:
+def normalized_target_text(value: str) -> str | None:
     text = value.strip()
+    if len(text) >= 2 and text.startswith('"') and text.endswith('"'):
+        return text[1:-1].strip()
+    if text.startswith('"') or text.endswith('"'):
+        return None
+    return text
+
+
+def is_valid_target(value: str) -> bool:
+    text = normalized_target_text(value)
+    if not text:
+        return False
     if looks_like_url(text):
         return True
     return Path(text).expanduser().exists()
 
 
 def open_target(value: str) -> None:
-    text = value.strip()
+    text = normalized_target_text(value)
+    if not text:
+        return
     if looks_like_url(text):
         webbrowser.open_new_tab(text)
         return

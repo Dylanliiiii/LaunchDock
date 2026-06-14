@@ -43,14 +43,21 @@ if (-not $InnoSetupCompiler -or -not (Test-Path $InnoSetupCompiler)) {
 }
 
 $scriptPath = Join-Path $Root "installer/launchdock.iss"
+$versionLabel = $Version
+if (-not $versionLabel.StartsWith("v")) {
+    $versionLabel = "v$versionLabel"
+}
+$releaseDir = Join-Path $Root "dist/$versionLabel"
+New-Item -ItemType Directory -Force -Path $releaseDir | Out-Null
+
 & $InnoSetupCompiler `
     "/DAppVersion=$Version" `
     "/DSourceDir=$appDir" `
-    "/DOutputDir=$(Join-Path $Root 'dist')" `
+    "/DOutputDir=$releaseDir" `
     "/DIconPath=$iconPath" `
     $scriptPath
 
-$setupPath = Join-Path $Root "dist/LaunchDock-v$Version-windows-setup.exe"
+$setupPath = Join-Path $releaseDir "LaunchDock-v$Version-windows-setup.exe"
 if (-not (Test-Path $setupPath)) {
     throw "Installer was not generated: $setupPath"
 }

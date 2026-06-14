@@ -4,7 +4,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
-from launchdock.app import is_valid_target, load_user_settings, save_user_setting, tr
+from launchdock.app import is_newer_version, is_valid_target, load_user_settings, normalized_target_text, save_user_setting, tr
 from launchdock.models import Link
 from launchdock.storage import DockStorage, StorageError, save_dock_path
 
@@ -119,7 +119,21 @@ class DockStorageTest(unittest.TestCase):
 
             self.assertTrue(is_valid_target("https://example.com"))
             self.assertTrue(is_valid_target(str(file_path)))
+            self.assertTrue(is_valid_target(f'"{file_path}"'))
             self.assertFalse(is_valid_target(str(Path(temp_dir) / "missing.txt")))
+            self.assertFalse(is_valid_target(f'"{file_path}'))
+            self.assertFalse(is_valid_target(f'{file_path}"'))
+
+    def test_normalized_target_text_handles_quotes(self) -> None:
+        self.assertEqual(normalized_target_text('"C:/Program Files/file.txt"'), "C:/Program Files/file.txt")
+        self.assertIsNone(normalized_target_text('"C:/Program Files/file.txt'))
+        self.assertIsNone(normalized_target_text('C:/Program Files/file.txt"'))
+
+    def test_version_compare(self) -> None:
+        self.assertTrue(is_newer_version("v0.2.0", "0.1.5"))
+        self.assertTrue(is_newer_version("0.10.0", "0.2.0"))
+        self.assertFalse(is_newer_version("v0.1.5", "0.1.5"))
+        self.assertFalse(is_newer_version("v0.1.4", "0.1.5"))
 
 
 if __name__ == "__main__":

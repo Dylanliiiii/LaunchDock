@@ -1,5 +1,31 @@
 # Development Log
 
+## 2026-06-15 04:24:50 +08:00
+
+### 修改范围
+
+- 关于页更新检查状态
+
+### 涉及文件
+
+- `launchdock/app.py`
+- `development-log.md`
+
+### 具体内容
+
+- 将关于页版本更新卡片的初始文案改为“尚未检查更新”，避免启动时误显示“没有检查到新版本”。
+- 自动检查和手动检查开始时都会切换为“正在检查更新 / 正在检查是否有最新版本”状态。
+- 自动检查完成后根据结果显示“暂无发布版本”“已是当前版本”“发现新版本”或“检查更新失败”，避免后台检查失败时卡片一直停留在检查中。
+- 新增空 Release 正文兜底文案，避免发现新版本但发布说明为空时复用未检查占位文案。
+- 同步更新简体中文、繁体中文、英文、日语、韩语和西班牙语文案。
+
+### 验证情况
+
+- 已运行 `python -m unittest discover -s tests`，13 个测试全部通过。
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过语法检查。
+- 已运行 Qt offscreen 冒烟测试，确认关于页初始显示“尚未检查更新”，检查中显示“正在检查更新”，无 Release 时才显示“暂无发布版本”。
+- 本次为日常开发修改，未更新项目版本号。
+
 ## Version 1.0.0 - 2026-06-14 20:24:33 +08:00
 
 ### 修改范围
@@ -102,6 +128,40 @@
 
 - 已检查安装脚本不再包含维护者本机绝对路径。
 - 本次为日常发布流程修正，未更新项目版本号。
+
+## 2026-06-14 23:34:26 +08:00
+
+### 修改范围
+
+- 启动项目交互优化
+- 启动目标路径兼容
+- 发布产物目录规范
+
+### 涉及文件
+
+- `launchdock/app.py`
+- `tests/test_storage.py`
+- `scripts/build-windows.ps1`
+- `scripts/build-installer.ps1`
+- `README.md`
+- `AGENTS.md`
+- `.agents/skills/launchdock-project/SKILL.md`
+- `development-log.md`
+
+### 具体内容
+
+- 启动项目页面默认将所有项目卡片折叠展示，用户可手动展开查看启动项。
+- 每条启动项右侧新增单独启动按钮，可只打开当前启动项。
+- 启动目标支持成对双引号包裹的本地路径，单边双引号仍判定为无效目标。
+- 软件启动后默认展开左侧导航栏。
+- Windows 压缩包和安装包输出到 `dist/v版本号/` 目录，方便不同版本发布产物分开保存。
+
+### 验证情况
+
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过。
+- 已运行 `python -m unittest discover -s tests`，13 个测试全部通过。
+- 已运行 Qt offscreen 构造检查，确认应用可创建且已有项目默认进入折叠状态。
+- 本次为日常功能优化，未更新项目版本号。
 
 ## 2026-06-14 20:03:54 +08:00
 

@@ -65,12 +65,19 @@ $arguments = @(
 python @arguments
 
 if ($Version) {
-    $zipName = "LaunchDock-$Version-windows.zip"
+    $versionLabel = $Version
+    if (-not $versionLabel.StartsWith("v")) {
+        $versionLabel = "v$versionLabel"
+    }
+    $releaseDir = Join-Path $Root "dist/$versionLabel"
+    $zipName = "LaunchDock-$versionLabel-windows.zip"
 } else {
+    $releaseDir = Join-Path $Root "dist"
     $zipName = "LaunchDock-windows.zip"
 }
 
-$zipPath = Join-Path $Root "dist/$zipName"
+New-Item -ItemType Directory -Force -Path $releaseDir | Out-Null
+$zipPath = Join-Path $releaseDir $zipName
 if (Test-Path $zipPath) {
     Remove-Item $zipPath
 }
