@@ -57,6 +57,14 @@ powershell -ExecutionPolicy Bypass -File scripts\build-windows.ps1 -Version v1.0
 
 打包产物会生成到 `dist/LaunchDock-v1.0.0-windows.zip`。脚本会从 `assets/icon.png` 临时派生 `build/launchdock.ico`，不会覆盖或修改原始图标文件，也不会包含用户本机的启动坞数据。
 
+如需生成 Windows 安装包，需要先安装 [Inno Setup 6](https://jrsoftware.org/isinfo.php)，然后运行：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\build-installer.ps1 -Version 1.0.0
+```
+
+安装包会生成到 `dist/LaunchDock-v1.0.0-windows-setup.exe`，适合在 GitHub Release 中提供给普通用户直接安装。压缩包和安装包可以同时上传：压缩包适合免安装使用，安装包适合创建开始菜单、桌面快捷方式和卸载入口。
+
 ## 发布 Release
 
 发布前先确认：
@@ -65,6 +73,7 @@ powershell -ExecutionPolicy Bypass -File scripts\build-windows.ps1 -Version v1.0
 - `development-log.md` 顶部已经添加 `## Version x.x.x - 时间` 正式发布记录。
 - 已运行基础验证：`python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py` 和 `python -m unittest discover -s tests`。
 - 已使用 `scripts\build-windows.ps1` 生成 Windows 压缩包。
+- 如发布安装版，已使用 `scripts\build-installer.ps1` 生成 Windows 安装包。
 
 GitHub Release 标题建议使用 `LaunchDock v1.0.0`。Release 正文应从上一个 `Version` 发布记录之后到本次发布记录之间提炼重点，保持简短；小型格式、文案和布局调整可以概括为“界面细节优化”。
 

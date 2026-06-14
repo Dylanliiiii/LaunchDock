@@ -201,6 +201,7 @@ LaunchDock 是一个本地“启动坞 / 启动屋”，用于管理多个学习
 - 正式发布时，在 `development-log.md` 顶部新增 `## Version x.x.x - YYYY-MM-DD HH:mm:ss +08:00` 记录。
 - Release 正文应从上一次带 `Version` 的发布记录之后，到本次发布记录之间提炼重点，不应过长；小型格式、文案和布局调整用概括性描述即可。
 - Windows 打包使用 `scripts/build-windows.ps1`，该脚本从 `assets/icon.png` 临时派生打包所需图标，不覆盖原始图标源文件。
+- Windows 安装包使用 `scripts/build-installer.ps1` 和 Inno Setup 6 生成，安装包文件名格式为 `LaunchDock-v版本号-windows-setup.exe`。
 - 打包产物位于 `dist/`，不得将用户本机启动坞数据或本地配置文件包含到 Release 包中。
 
 ## 修改文件时的检查清单

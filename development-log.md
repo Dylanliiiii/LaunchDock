@@ -54,6 +54,33 @@
 - 当前环境缺少 GitHub CLI，且未配置 `GITHUB_TOKEN`，暂未直接创建 GitHub Release。
 - 本次为日常发布流程补充，未更新项目版本号。
 
+## 2026-06-14 20:58:17 +08:00
+
+### 修改范围
+
+- Windows 安装包发布流程
+
+### 涉及文件
+
+- `installer/launchdock.iss`
+- `scripts/build-installer.ps1`
+- `README.md`
+- `AGENTS.md`
+- `.agents/skills/launchdock-project/SKILL.md`
+- `development-log.md`
+
+### 具体内容
+
+- 新增 Inno Setup 安装脚本，用于生成 Windows `setup.exe` 安装包。
+- 新增 `scripts/build-installer.ps1`，在已有 PyInstaller 程序目录基础上生成 `LaunchDock-v版本号-windows-setup.exe`。
+- 在 README、项目协作说明和项目专属 Skill 中补充安装包生成方式与 Release 资产约定。
+- 安装包支持开始菜单快捷方式、可选桌面快捷方式、卸载入口和应用图标。
+
+### 验证情况
+
+- 已检查当前环境未安装 Inno Setup 编译器，暂未生成实际安装包。
+- 本次为日常发布流程补充，未更新项目版本号。
+
 ## 2026-06-14 20:03:54 +08:00
 
 ### 修改范围
