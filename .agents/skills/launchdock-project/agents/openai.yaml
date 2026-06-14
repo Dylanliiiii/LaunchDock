@@ -1,0 +1,4 @@
+interface:
+  display_name: "LaunchDock 项目助手"
+  short_description: "维护 LaunchDock 的项目模块、链接启动和本地启动坞约定。"
+  default_prompt: "根据 LaunchDock 的项目约定，更新需求、设计数据结构或实现项目启动坞功能。"

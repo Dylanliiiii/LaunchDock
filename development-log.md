@@ -1,0 +1,790 @@
+# Development Log
+
+## 2026-06-14 19:03:13 +08:00
+
+### 修改范围
+
+- 项目专属 Agent 配置
+- 测试文件可读性
+
+### 涉及文件
+
+- `.agents/skills/launchdock-project/agents/openai.yaml`
+- `tests/test_storage.py`
+- `development-log.md`
+
+### 具体内容
+
+- 修正项目专属 Agent 配置文件中的乱码中文，恢复为正常 UTF-8 中文文案。
+- 修正测试文件中被错误编码显示的中文、日文测试字符串，保持测试语义不变，提升开源仓库可读性。
+
+### 验证情况
+
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过。
+- 已运行 `python -m unittest discover -s tests`，11 个测试全部通过。
+- 本次为日常开发修改，未更新项目版本号。
+
+## 2026-06-14 18:39:55 +08:00
+
+### 修改范围
+
+- 项目重命名存储逻辑
+- 项目文件夹迁移
+- 测试
+- 项目协作说明
+
+### 涉及文件
+
+- `launchdock/storage.py`
+- `launchdock/app.py`
+- `tests/test_storage.py`
+- `AGENTS.md`
+- `.agents/skills/launchdock-project/SKILL.md`
+- `development-log.md`
+
+### 具体内容
+
+- 新增存储层 `rename_project` 方法，重命名项目时同步迁移启动坞 `projects/` 下的项目文件夹。
+- 项目重命名后会同步更新 `project.json` 中的 `name` 和 `folder_name`。
+- 文件夹名生成逻辑支持排除当前项目原文件夹，避免仅大小写或同名保存时误判冲突。
+- 如果新项目名对应的文件夹已存在，会自动生成不冲突的文件夹名，例如 `项目-2`，避免覆盖其他项目。
+- UI 层编辑项目名称时改为调用存储层重命名方法，而不是只改内存中的项目显示名称。
+- 新增测试覆盖项目重命名迁移文件夹，以及重名项目自动生成唯一文件夹名。
+- 将项目重命名同步文件夹的约定写入 `AGENTS.md` 和项目专属 Skill。
+
+### 验证情况
+
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过。
+- 已运行 `python -m unittest discover -s tests`，11 个测试全部通过。
+- 本次为日常开发修改，未更新项目版本号。
+
+## 2026-06-14 18:28:49 +08:00
+
+### 修改范围
+
+- 项目名称编辑弹窗
+- 启动项编辑弹窗
+
+### 涉及文件
+
+- `launchdock/app.py`
+- `development-log.md`
+
+### 具体内容
+
+- 将项目名称输入框的回车键绑定到保存按钮，按回车与点击“保存”走同一条确认逻辑。
+- 将启动项名称输入框和 URL / 本地路径输入框的回车键绑定到保存按钮，避免弹窗关闭但修改未保存。
+
+### 验证情况
+
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过。
+- 已运行 `python -m unittest discover -s tests`，9 个测试全部通过。
+- 已运行 Qt offscreen 冒烟测试，分别触发项目名称输入框和启动项 URL 输入框的 `returnPressed` 信号，确认两个对话框都返回确认状态。
+- 本次为日常开发修改，未更新项目版本号。
+
+## 2026-06-14 18:08:22 +08:00
+
+### 修改范围
+
+- 启动项列表布局
+- 主界面横向滚动
+- 无边框窗口缩放命中范围
+- 项目协作说明
+
+### 涉及文件
+
+- `launchdock/app.py`
+- `AGENTS.md`
+- `.agents/skills/launchdock-project/SKILL.md`
+- `development-log.md`
+
+### 具体内容
+
+- 启动项列表中不再直接显示完整 URL 或本地路径，只保留启动项名称，避免长地址撑开项目卡片并把“启动”按钮挤到可视区域外。
+- 为启动项行保留 URL 工具提示，完整地址仍可通过编辑启动项查看和修改。
+- 关闭启动项目主滚动区的横向滚动条，让主界面保持纵向浏览。
+- 显式开启 QFluentWidgets 无边框窗口缩放能力，并将窗口边缘缩放命中宽度调整为 10px，改善右侧边缘和右上 / 右下角难以触发缩放的问题。
+- 将“启动项列表不直接展示完整地址”的界面约定同步写入 `AGENTS.md` 和项目专属 Skill。
+
+### 验证情况
+
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过。
+- 已运行 `python -m unittest discover -s tests`，9 个测试全部通过。
+- 已运行 Qt offscreen 冒烟测试，构造超长 URL 启动项后确认界面中不再出现完整地址文本，主滚动区横向滚动条策略为关闭。
+- 已在 Qt offscreen 冒烟测试中确认窗口 `_isResizeEnabled` 为 `True`，无边框缩放命中宽度为 `10px`。
+- 本次为日常开发修改，未更新项目版本号。
+
+## 2026-06-14 17:05:17 +08:00
+
+### 修改范围
+
+- 多语言翻译覆盖
+- 语言下拉显示规则
+- 项目协作说明
+
+### 涉及文件
+
+- `launchdock/app.py`
+- `AGENTS.md`
+- `.agents/skills/launchdock-project/SKILL.md`
+- `development-log.md`
+
+### 具体内容
+
+- 补齐启动项目卡片、启动项管理、启动坞页面、关于页面、常用对话框和提示信息的多语言文案引用，避免在英文、日语、韩语、西班牙语等界面中继续显示简体中文。
+- 调整语言下拉列表：各语言名称始终使用对应语言自身写法，例如 `English`、`日本語`、`한국어`、`Español`。
+- 保留“使用系统设置”为唯一跟随当前界面语言变化的语言选项，并在语言设置保存后立即刷新设置页下拉框显示。
+- 为单个启动项删除确认补充独立翻译键，避免复用项目删除标题。
+- 将语言下拉显示约定同步写入 `AGENTS.md` 和项目专属 Skill，方便后续继续维护。
+
+### 验证情况
+
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过。
+- 已运行 `python -m unittest discover -s tests`，9 个测试全部通过。
+- 已运行 Qt offscreen 冒烟测试，确认英文界面下项目卡片计数和空项目提示为英文，并确认语言下拉显示为 `简体中文`、`繁体中文`、`English`、`日本語`、`한국어`、`Español`、`Use system setting`。
+- 已在 Qt offscreen 冒烟测试中切换到日语刷新设置页，确认语言下拉里的语言名称保持原生写法，且仅最后一项变为 `システム設定を使用`。
+- 本次为日常开发修改，未更新项目版本号。
+
+## 2026-06-14 15:37:17 +08:00
+
+### 修改范围
+
+- 设置页面图标
+- 语言设置生效逻辑
+- 语言切换提示
+- 测试
+
+### 涉及文件
+
+- `launchdock/app.py`
+- `tests/test_storage.py`
+- `development-log.md`
+
+### 具体内容
+
+- 调整设置页“应用主题”和“语言”卡片左侧图标，固定图标尺寸为 28px，让设置项前的图标明确可见。
+- 新增轻量级界面文案翻译表，覆盖导航、启动项目页标题、设置页标题、设置项标题与说明、语言重启提示等核心界面文案。
+- 应用启动时会根据已保存语言读取核心界面文案；选择“使用系统设置”时会根据系统语言粗略映射到支持的语言。
+- 修改语言设置后会保存到本地配置，并提示用户“语言将在重启后生效”，避免用户误以为当前界面会立即完整切换。
+- 新增测试，确认语言文案函数能根据语言设置返回对应核心文案。
+
+### 验证情况
+
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过。
+- 已运行 `python -m unittest discover -s tests`，9 个测试全部通过。
+- 已运行 Qt offscreen 冒烟测试，确认英文设置下设置页标题显示为 `LaunchDock Settings`，并确认设置卡片图标控件宽度为 28px。
+- 本次为日常开发修改，未更新项目版本号。
+
+## 2026-06-14 15:28:09 +08:00
+
+### 修改范围
+
+- 设置页面
+- 应用主题设置
+- 语言选择设置
+- 设置持久化
+- 测试
+
+### 涉及文件
+
+- `launchdock/app.py`
+- `tests/test_storage.py`
+- `development-log.md`
+
+### 具体内容
+
+- 在左侧底部导航的“关于”下方新增“设置”入口。
+- 新增 `LaunchDock设置` 页面，页面标题不使用“软件设置”。
+- 新增“应用主题”设置，支持选择“浅色”“深色”“跟随系统”，并在选择后立即应用到 QFluentWidgets 主题。
+- 新增“语言”设置，支持选择“简体中文”“繁体中文”“英文”“日语”“韩语”“西班牙语”“使用系统设置”。
+- 将主题和语言设置保存到本地应用配置文件中的 `settings` 字段，重新启动后可以读取上次选择。
+- 新增设置读写测试，覆盖默认设置和保存后的设置读取。
+
+### 验证情况
+
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过。
+- 已运行 `python -m unittest discover -s tests`，8 个测试全部通过。
+- 已运行 Qt offscreen 冒烟测试，确认设置页可以创建，主题和语言下拉框可以切换，并能写入临时配置文件。
+- 本次为日常开发修改，未更新项目版本号。
+
+## 2026-06-14 15:21:02 +08:00
+
+### 修改范围
+
+- 关于页面文案
+- 版本号展示策略
+
+### 涉及文件
+
+- `launchdock/app.py`
+- `development-log.md`
+
+### 具体内容
+
+- 移除关于页面中 `LaunchDock v0.1.5` 的版本号展示。
+- 关于页面标题改为仅显示 `LaunchDock`，避免在尚未正式打包或发布版本时给用户造成已有发布版本的误解。
+- 保留 `launchdock/__init__.py` 中的 `__version__` 不变，遵守日常开发不随意变更版本号的规则；后续正式打包或发布时再统一决定版本号与展示方式。
+
+### 验证情况
+
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过。
+- 已运行 `python -m unittest discover -s tests`，7 个测试全部通过。
+- 本次为日常开发修改，未更新项目版本号。
+
+## 2026-06-14 15:04:57 +08:00
+
+### 修改范围
+
+- 启动坞路径加载逻辑
+- 启动坞缺失状态提示
+- 存储层测试
+
+### 涉及文件
+
+- `launchdock/storage.py`
+- `launchdock/app.py`
+- `tests/test_storage.py`
+- `development-log.md`
+
+### 具体内容
+
+- 调整 `DockStorage` 初始化逻辑：如果已保存的启动坞路径不存在，不再把它作为可用启动坞，也不自动重新创建该文件夹。
+- 新增 `missing_dock_path` 状态，用于记录上次保存但当前已经不存在的启动坞路径。
+- 主界面和“启动坞”页面在路径缺失时显示明确中文提示，说明该文件夹可能已被移动、删除或重命名，并引导用户重新选择或创建启动坞。
+- 选择启动坞时，如果上次路径缺失且其父目录仍存在，文件夹选择窗口默认从父目录开始，方便用户找回或重选。
+- 新增测试，确认已保存的启动坞路径缺失时不会被自动重新创建。
+
+### 验证情况
+
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过。
+- 已运行 `python -m unittest discover -s tests`，7 个测试全部通过。
+- 本次为日常开发修改，未更新项目版本号。
+
+## 2026-06-14 10:10:00 +08:00
+
+### 修改范围
+
+- 项目协作说明
+- 项目专属 Skill
+- 开发记录文件
+
+### 涉及文件
+
+- `AGENTS.md`
+- `.agents/skills/launchdock-project/SKILL.md`
+- `.agents/skills/launchdock-project/agents/openai.yaml`
+- `development-log.md`
+
+### 具体内容
+
+- 将项目协作说明整理为中文，并明确后续文档、注释、界面文案默认使用中文。
+- 明确后续新增文件和目录使用简洁、合适的英文名称，文件内容继续使用中文。
+- 将项目专属 Skill 路径改为仓库相对路径，避免开源后依赖维护者本机路径。
+- 创建项目专属 Skill，用于维护 LaunchDock 的项目模块、链接启动、本地数据坞和中文文档规则。
+- 明确 LaunchDock 创建项目时既可以立即添加链接，也可以先创建空项目，之后再补充内容。
+- 明确数据坞为用户自定义本地大文件夹，所有小项目保存在其下的独立项目文件夹中。
+- 补充开源协作约束：仓库内说明、配置和示例不能写死任何开发者本机绝对路径。
+- 新增本开发记录文件，用于后续记录每次生成或修改代码时的具体工作。
+
+### 验证情况
+
+- 已读取并检查 `AGENTS.md` 和项目专属 `SKILL.md` 的主要内容。
+- 曾尝试运行 skill 验证脚本，但当前 Python 环境缺少 `yaml` 模块，验证脚本无法启动。
+- 本次未生成应用代码，因此未运行应用级测试。
+
+## 2026-06-14 10:39:34 +08:00
+
+### 修改范围
+
+- 项目协作说明
+- 项目专属 Skill
+- 开发记录格式
+
+### 涉及文件
+
+- `AGENTS.md`
+- `.agents/skills/launchdock-project/SKILL.md`
+- `development-log.md`
+
+### 具体内容
+
+- 从 `AGENTS.md` 中移除“当前阶段约束”段落。
+- 明确后续开发记录需要同时包含日期和具体时间，方便判断更新顺序。
+- 明确后续涉及代码生成或代码修改时，需要同步记录开发日志。
+- 同步更新项目专属 Skill，要求修改代码后更新 `development-log.md` 并写清日期与具体时间。
+- 将已有开发记录标题升级为包含日期、时间和时区的格式。
+
+### 验证情况
+
+- 已读取并检查 `AGENTS.md`、项目专属 `SKILL.md` 和 `development-log.md`。
+- 本次只修改文档和项目规则，未生成应用代码，因此未运行应用级测试。
+
+## 2026-06-14 10:41:14 +08:00
+
+### 修改范围
+
+- 项目协作说明
+- 项目专属 Skill
+- 开发记录
+
+### 涉及文件
+
+- `AGENTS.md`
+- `.agents/skills/launchdock-project/SKILL.md`
+- `development-log.md`
+
+### 具体内容
+
+- 在 `AGENTS.md` 中新增规则：后续如果新增、修改、删除或移动任何 Skill，必须同步更新 `AGENTS.md` 中的项目专属 Skill 说明。
+- 在项目专属 Skill 中同步加入 Skill 变更时更新 `AGENTS.md` 的要求。
+- 在项目专属 Skill 的检查清单中加入 Skill 变更同步检查项。
+
+### 验证情况
+
+- 已读取并检查 `AGENTS.md`、项目专属 `SKILL.md` 和 `development-log.md` 的相关段落。
+- 本次只修改文档和项目规则，未生成应用代码，因此未运行应用级测试。
+
+## 2026-06-14 10:46:32 +08:00
+
+### 修改范围
+
+- 应用入口
+- 数据模型
+- 本地数据坞存储
+- Tkinter 图形界面
+- 项目说明
+- 测试
+
+### 涉及文件
+
+- `main.py`
+- `launchdock/__init__.py`
+- `launchdock/models.py`
+- `launchdock/storage.py`
+- `launchdock/app.py`
+- `tests/test_storage.py`
+- `README.md`
+- `.gitignore`
+- `development-log.md`
+
+### 具体内容
+
+- 新增 `main.py` 作为 LaunchDock 应用入口。
+- 新增 `launchdock` 包，拆分为模型、存储和 GUI 模块。
+- 实现项目和链接数据模型，包含 `id`、名称、URL、默认启动、排序、创建时间和更新时间。
+- 实现本地数据坞存储层：支持 `launchdock.json`、`projects/<project>/project.json`、项目文件夹重名处理、项目排序和最近项目记录。
+- 创建项目支持空项目，也支持创建后立即添加第一个链接。
+- 实现 Tkinter 桌面界面：项目列表、链接表、选择数据坞、新建项目、重命名、删除、添加链接、编辑链接、删除链接、上移、下移和一键启动。
+- 一键启动会按排序打开默认启动链接，并对空链接或明显异常 URL 做中文提示。
+- 新增 `README.md`，说明运行方式、主要功能和数据坞结构。
+- 新增 `.gitignore`，避免提交 Python 缓存、构建产物和本地默认数据坞。
+- 新增存储层单元测试，覆盖创建空项目、保存链接、删除项目和全局项目排序。
+- 修正存储层行为：使用临时数据坞时不再自动写入用户主目录配置；只有用户在界面主动选择数据坞时才尝试保存路径。
+
+### 验证情况
+
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过。
+- 已运行 `python -m unittest discover -s tests`，4 个测试全部通过。
+- 未自动启动 GUI 主循环，避免在当前会话中打开交互窗口；可通过 `python main.py` 手动运行。
+
+## 2026-06-14 11:30:48 +08:00
+
+### 修改范围
+
+- 界面风格
+- 主界面交互
+- 启动目标类型
+- 项目文档
+- 测试
+
+### 涉及文件
+
+- `AGENTS.md`
+- `.agents/skills/launchdock-project/SKILL.md`
+- `launchdock/__init__.py`
+- `launchdock/app.py`
+- `tests/test_storage.py`
+- `README.md`
+- `development-log.md`
+
+### 具体内容
+
+- 根据参考图和新要求，将主界面从“左侧项目列表 + 右侧表格”重构为深色 WinUI 风格布局。
+- 新界面采用左侧垂直导航栏，包含图标和文字。
+- 右侧主区域改为设置页式布局，右上角提供“新建”按钮。
+- 启动项目以卡片形式显示，每个项目卡片包含项目标题、启动项数量、编辑按钮、删除按钮、添加启动项按钮和启动按钮。
+- 每条启动项以横向卡片行显示，左侧有图标、名称和说明地址，右侧有启用开关、编辑图标、删除图标和上下移动按钮。
+- 使用深色低对比度背景、接近 Segoe UI 的字体和青色强调色。
+- 启动目标从纯网页 URL 扩展为网页链接或本地文件路径；网页用浏览器打开，本地文件或文件夹交给系统默认程序打开。
+- 更新 `AGENTS.md` 和项目专属 Skill，固化新的界面风格、卡片交互和本地文件启动要求。
+- 更新 `README.md`，说明新界面风格和本地文件路径启动能力。
+- 新增测试，覆盖 URL、本地存在文件和缺失文件的启动目标校验。
+
+### 验证情况
+
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过。
+- 已运行 `python -m unittest discover -s tests`，5 个测试全部通过。
+- 未自动启动 GUI 主循环，避免在当前会话中打开交互窗口；可通过 `python main.py` 手动运行查看界面。
+
+## 2026-06-14 11:56:55 +08:00
+
+### 修改范围
+
+- UI 技术栈迁移
+- QFluentWidgets 界面重写
+- 项目文档
+- 依赖管理
+- 验证
+
+### 涉及文件
+
+- `launchdock/app.py`
+- `launchdock/__init__.py`
+- `requirements.txt`
+- `README.md`
+- `AGENTS.md`
+- `.agents/skills/launchdock-project/SKILL.md`
+- `development-log.md`
+
+### 具体内容
+
+- 根据 `UI迁移框架说明书-QFluentWidgets.md`，将 UI 层从 Tkinter 迁移到 PySide6 + QFluentWidgets。
+- 保持 `launchdock/models.py` 和 `launchdock/storage.py` 不变，只重写 UI 层 `launchdock/app.py`。
+- 使用 `FluentWindow` 构建主窗口，提供“启动项目”“数据坞”“关于”三个导航入口。
+- 使用 `CardWidget`、`SmoothScrollArea`、`SwitchButton`、`PrimaryPushButton`、`TransparentToolButton` 等 QFluentWidgets 组件重建项目卡片和启动项卡片。
+- 使用 `Dialog + LineEdit + CheckBox` 实现项目名称和启动项编辑对话框，替代 Tkinter 弹窗。
+- 使用 `InfoBar` 和 `MessageBox` 统一提示、警告和确认删除体验。
+- 设置深色主题和青色强调色，贴近 Windows 11 / Fluent Design 桌面应用观感。
+- 新增 `requirements.txt`，记录 `PySide6` 和 `PySide6-Fluent-Widgets` 依赖。
+- 更新 `README.md`、`AGENTS.md` 和项目专属 Skill，明确当前 UI 技术栈为 PySide6 + QFluentWidgets，不再使用 Tkinter 主界面。
+- 参考 `ok-oldking/ok-script` 的公开仓库信息，其依赖包含 PySide6 / QFluentWidgets 技术栈，并将其作为 Qt/Fluent 桌面应用架构参考。
+
+### 验证情况
+
+- 已安装 `PySide6` 和 `PySide6-Fluent-Widgets`。
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过。
+- 已运行 `python -m unittest discover -s tests`，5 个测试全部通过。
+- 已运行 Qt 冒烟测试：在 `QT_QPA_PLATFORM=offscreen` 下创建 `LaunchDockApp` 窗口实例，成功输出 `LaunchDockApp LaunchDock 启动坞`。
+- 未进入 GUI 主循环；可通过 `python main.py` 手动启动应用。
+
+## 2026-06-14 12:11:02 +08:00
+
+### 修改范围
+
+- 开发记录规则
+- 项目协作说明
+- 项目专属 Skill
+
+### 涉及文件
+
+- `development-log.md`
+- `AGENTS.md`
+- `.agents/skills/launchdock-project/SKILL.md`
+
+### 具体内容
+
+- 将所有已有开发日志条目的标题中的版本号去除，只保留日期、时间和时区。
+- 删除各条目"具体内容"中"更新版本号为 `X.Y.Z`"类描述。
+- 修正早期条目中关于"记录 Version"的描述，改为"记录开发日志"或"记录日期与具体时间"。
+- 在 `AGENTS.md` 中新增规则：版本号仅在正式完成一轮开发、重新打包或上线更新时才记录到开发日志；日常开发和测试不改变版本号，也不改变 `__version__`。
+- 在项目专属 Skill 中同步加入版本号规则：日常开发不记录版本号，仅记录日期和时间；检查清单中加入"日常开发不应变更版本号"检查项。
+
+### 验证情况
+
+- 已读取并检查 `development-log.md`、`AGENTS.md` 和项目专属 `SKILL.md` 的相关段落。
+- 本次只修改文档和开发规则，未生成应用代码，因此未运行应用级测试。
+
+## 2026-06-14 12:23:27 +08:00
+
+### 修改范围
+
+- 启动项目界面交互
+- 项目管理模式
+- 项目文档
+- 验证
+
+### 涉及文件
+
+- `launchdock/app.py`
+- `AGENTS.md`
+- `.agents/skills/launchdock-project/SKILL.md`
+- `README.md`
+- `development-log.md`
+
+### 具体内容
+
+- 去除项目卡片右上角重复的“添加”图标，保留项目卡片底部“添加启动项”按钮。
+- 去除每条启动项右侧的上移、下移箭头。
+- 为项目卡片增加折叠按钮，点击可展开或收起该项目下的所有启动项。
+- 增加管理模式：顶部“管理”按钮进入批量操作状态。
+- 管理模式下可勾选启动项目，支持“全选”和“删除所选”。
+- 管理模式下隐藏“新建”按钮，点击“完成”退出管理模式。
+- 调整启动项目页滚动区域背景为透明，避免项目卡片后方出现突兀的大块黑色矩形背景。
+- 更新 `AGENTS.md`、项目专属 Skill 和 `README.md`，同步记录折叠、批量删除、去除重复按钮和去除无效排序箭头等要求。
+
+### 验证情况
+
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过。
+- 已运行 `python -m unittest discover -s tests`，5 个测试全部通过。
+- 已运行 Qt 冒烟测试：在 `QT_QPA_PLATFORM=offscreen` 下创建 `LaunchDockApp` 窗口实例，成功输出 `LaunchDockApp LaunchDock 启动坞`。
+- 本次为日常开发修改，未更新项目版本号。
+
+## 2026-06-14 12:34:54 +08:00
+
+### 修改范围
+
+- 应用图标
+- 项目文档
+- 验证
+
+### 涉及文件
+
+- `assets/icon.webp`
+- `launchdock/app.py`
+- `README.md`
+- `AGENTS.md`
+- `.agents/skills/launchdock-project/SKILL.md`
+- `development-log.md`
+
+### 具体内容
+
+- 接入 `assets/icon.webp` 作为 LaunchDock 软件图标源。
+- 在应用启动时通过 `QApplication.setWindowIcon()` 设置全局窗口图标。
+- 在主窗口初始化时通过 `setWindowIcon()` 设置窗口图标。
+- 新增 `app_icon()` 辅助函数，统一从仓库相对路径加载 `assets/icon.webp`。
+- 更新 `README.md`，说明当前运行和后续打包都应使用 `assets/icon.webp` 作为软件图标源。
+- 更新 `AGENTS.md` 和项目专属 Skill，固化软件图标源文件和后续打包图标约定。
+
+### 验证情况
+
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过。
+- 已运行 `python -m unittest discover -s tests`，5 个测试全部通过。
+- 已运行 Qt 冒烟测试：在 `QT_QPA_PLATFORM=offscreen` 下创建 `LaunchDockApp` 窗口实例，成功输出 `LaunchDockApp LaunchDock 启动坞 False`，其中 `False` 表示 `app_icon().isNull()` 为假，图标已成功加载。
+- 本次为日常开发修改，未更新项目版本号。
+
+## 2026-06-14 12:52:09 +08:00
+
+### 修改范围
+
+- 应用图标
+- 窗口标题
+- 启动项目管理
+- 单项目启动项管理
+- 项目文档
+- 项目专属 Skill
+
+### 涉及文件
+
+- `assets/icon.png`
+- `launchdock/app.py`
+- `README.md`
+- `AGENTS.md`
+- `.agents/skills/launchdock-project/SKILL.md`
+- `development-log.md`
+
+### 具体内容
+
+- 将软件图标源更新为 `assets/icon.png`，并继续通过仓库相对路径加载窗口图标，方便后续开源和打包。
+- 将应用窗口标题改为 `LaunchDock`，去除标题栏中的“启动坞”后缀。
+- 修正启动项目管理模式的勾选控件创建方式，避免进入管理后项目内容区域显示为空。
+- 保留顶部“管理项目”功能，用于勾选多个启动项目、全选并批量删除。
+- 新增每个项目卡片内的“管理启动项”功能，用于勾选该项目内多个启动项、全选启动项并批量删除。
+- 在进入项目管理和启动项管理时清理互斥管理状态，避免两种管理模式同时生效。
+- 更新 `README.md`、`AGENTS.md` 和项目专属 Skill，记录 `assets/icon.png`、英文标题栏和两层管理功能要求。
+
+### 验证情况
+
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过。
+- 已运行 `python -m unittest discover -s tests`，5 个测试全部通过。
+- 已运行 Qt offscreen 冒烟测试：成功输出 `LaunchDockApp LaunchDock False`，其中 `LaunchDock` 表示窗口标题已去除中文后缀，`False` 表示 `app_icon().isNull()` 为假，图标已成功加载。
+- 本次为日常开发修改，未更新项目版本号。
+
+## 2026-06-14 13:01:29 +08:00
+
+### 修改范围
+
+- 启动项目管理
+- 单项目启动项管理
+- 运行时报错修复
+
+### 涉及文件
+
+- `launchdock/app.py`
+- `development-log.md`
+
+### 具体内容
+
+- 修复 QFluentWidgets `CheckBox` 没有 `checkedChanged` 信号导致点击“管理启动项”时报错的问题。
+- 将项目管理和启动项管理中的勾选状态监听改为 `checkStateChanged`。
+- 新增 `is_checked_state()` 辅助函数，将 Qt 勾选状态统一转换为布尔值，供批量选择逻辑使用。
+- 保持 `SwitchButton.checkedChanged` 不变，因为启动项启用开关使用的是独立控件信号。
+
+### 验证情况
+
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过。
+- 已运行 `python -m unittest discover -s tests`，5 个测试全部通过。
+- 已运行 Qt offscreen 冒烟测试，直接刷新项目卡片、进入“管理启动项”、再进入“管理项目”，成功输出 `LaunchDockApp LaunchDock 1`。
+- 本次为日常开发修改，未更新项目版本号。
+
+## 2026-06-14 13:29:29 +08:00
+
+### 修改范围
+
+- 启动项目管理
+- 单项目启动项管理
+- 选择交互优化
+- 项目文档
+- 项目专属 Skill
+
+### 涉及文件
+
+- `launchdock/app.py`
+- `README.md`
+- `AGENTS.md`
+- `.agents/skills/launchdock-project/SKILL.md`
+- `development-log.md`
+
+### 具体内容
+
+- 为顶部“管理项目”模式新增“取消全选”和“反选”功能。
+- 为单个项目卡片内“管理启动项”模式新增“取消全选”和“反选”功能。
+- 修复管理模式刷新界面时 `SwitchButton.setChecked()` 触发 `checkedChanged`，导致已启用启动项开关视觉跳动的问题。
+- 在初始化启动项开关状态时临时屏蔽信号，只保留用户主动点击开关时触发保存。
+- 更新 `README.md`、`AGENTS.md` 和项目专属 Skill，记录两层管理都应支持全选、取消全选、反选和批量删除。
+
+### 验证情况
+
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过。
+- 已运行 `python -m unittest discover -s tests`，5 个测试全部通过。
+- 已运行 Qt offscreen 冒烟测试：刷新项目卡片、执行项目管理的全选/取消全选/反选、执行启动项管理的全选/取消全选/反选，成功输出 `LaunchDockApp LaunchDock 0 2`，其中 `0` 表示批量选择过程中没有误触发启动项开关逻辑。
+- 本次为日常开发修改，未更新项目版本号。
+
+## 2026-06-14 13:33:53 +08:00
+
+### 修改范围
+
+- 启动项开关显示
+- 管理模式选择交互
+- 视觉跳动修复
+
+### 涉及文件
+
+- `launchdock/app.py`
+- `development-log.md`
+
+### 具体内容
+
+- 修复管理模式中点击全选、取消全选或反选时，启动项启用开关仍出现视觉跳动的问题。
+- 新增 `set_switch_checked_without_animation()` 辅助函数，用于在刷新界面时无动画设置 `SwitchButton` 初始状态。
+- 初始化启动项开关时直接设置内部滑块最终位置，避免控件从默认关闭状态滑动到启用状态。
+- 保留用户手动点击启动项开关时的正常动画和保存逻辑。
+
+### 验证情况
+
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过。
+- 已运行 `python -m unittest discover -s tests`，5 个测试全部通过。
+- 已运行 Qt offscreen 冒烟测试：刷新项目卡片并执行“管理启动项”的全选操作后，所有 `SwitchButton` 动画状态均为停止，输出 `LaunchDockApp 8 [True, True, True, True, True, True, True, True] ...`。
+- 本次为日常开发修改，未更新项目版本号。
+
+## 2026-06-14 13:45:24 +08:00
+
+### 修改范围
+
+- 删除确认弹窗
+- 批量删除项目
+- 同名空项目删除验证
+
+### 涉及文件
+
+- `launchdock/app.py`
+- `development-log.md`
+
+### 具体内容
+
+- 将删除确认从 QFluentWidgets `MessageBox` 改为 Qt 原生 `QMessageBox.question` 形式的稳定确认流程。
+- 新增 `confirm_action()` 方法，统一处理删除项目、批量删除项目、删除启动项和批量删除启动项的确认。
+- 删除确认按钮改为中文“确定 / 取消”，默认按钮为“取消”，避免误删。
+- 修复批量删除两个同名空项目时，确认弹窗点击后无响应且程序无法退出的问题。
+- 保持删除前必须确认的用户数据保护规则不变。
+
+### 验证情况
+
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过。
+- 已运行 `python -m unittest discover -s tests`，5 个测试全部通过。
+- 已运行 Qt offscreen 冒烟测试：创建两个同名空项目，自动确认批量删除后输出 `0 [] False False`，确认两个项目记录和对应项目文件夹均已删除。
+- 本次为日常开发修改，未更新项目版本号。
+
+## 2026-06-14 14:05:19 +08:00
+
+### 修改范围
+
+- 删除确认弹窗
+- 应用图标加载
+- 图标透明通道处理
+- 项目文档
+- 项目专属 Skill
+
+### 涉及文件
+
+- `assets/icon.png`
+- `launchdock/app.py`
+- `README.md`
+- `AGENTS.md`
+- `.agents/skills/launchdock-project/SKILL.md`
+- `development-log.md`
+
+### 具体内容
+
+- 去除删除确认弹窗中的 Qt 默认黄色警示图标，避免与当前 Windows / Fluent 风格不匹配。
+- 删除确认弹窗继续保留窗口标题栏的软件图标和“确定 / 取消”确认逻辑。
+- 为应用图标加载新增透明通道检测；如果图标源已经有 alpha 通道，则保留原透明效果。
+- 新增运行时纯色背景剔除逻辑：当图标源缺少透明通道时，基于四角背景色临时生成透明背景图标，不覆盖原始图标源文件。
+- 将当前随机命名的图标文件规范为 `assets/icon.png`，保持代码、文档和后续打包路径一致。
+- 更新 `README.md`、`AGENTS.md` 和项目专属 Skill，记录图标透明通道与运行时背景剔除规则。
+
+### 验证情况
+
+- 已检查 `assets/icon.png`，当前图标为 `RGBA`，透明通道有效，alpha 范围为 `0` 到 `255`。
+- 已运行 Qt offscreen 冒烟测试，确认 `assets/icon.png` 存在且 `app_icon().isNull()` 为 `False`。
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过。
+- 已运行 `python -m unittest discover -s tests`，5 个测试全部通过。
+- 本次为日常开发修改，未更新项目版本号。
+
+## 2026-06-14 14:25:26 +08:00
+
+### 修改范围
+
+- 启动坞命名
+- 首次启动逻辑
+- 启动项目创建前提
+- 项目文档
+- 项目专属 Skill
+- 测试
+
+### 涉及文件
+
+- `launchdock/storage.py`
+- `launchdock/app.py`
+- `tests/test_storage.py`
+- `README.md`
+- `AGENTS.md`
+- `.agents/skills/launchdock-project/SKILL.md`
+- `development-log.md`
+
+### 具体内容
+
+- 将用户可见的“数据坞”统一改为“启动坞”。
+- 移除首次使用时自动回退到用户主目录 `LaunchDockData` 的逻辑。
+- 没有保存启动坞路径时，`DockStorage.dock_path` 保持为 `None`，不会自动创建本地目录。
+- 主界面在没有启动坞时显示引导卡片，提示用户先创建启动坞，并说明启动坞用于保存启动项目的存储位置。
+- 没有创建或选择启动坞前，隐藏“新建”和“管理项目”入口，并阻止创建启动项目。
+- “启动坞”页面改为“创建 / 选择启动坞”，未创建时显示说明文字，不再显示默认地址。
+- 新增存储层测试，覆盖未配置启动坞时创建项目会提示用户先选择启动坞。
+- 更新 `README.md`、`AGENTS.md` 和项目专属 Skill，记录首次使用为空、先创建启动坞再创建启动项目的前提逻辑。
+
+### 验证情况
+
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过。
+- 已运行 `python -m unittest discover -s tests`，6 个测试全部通过。
+- 已运行 Qt offscreen 首次启动模拟：使用临时用户目录启动应用，成功输出 `None 0 False`，确认无启动坞路径、无项目、未处于已创建启动坞状态。
+- 本次为日常开发修改，未更新项目版本号。
