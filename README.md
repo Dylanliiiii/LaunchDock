@@ -41,6 +41,44 @@ python -m pip install -r requirements.txt
 python main.py
 ```
 
+## Windows 打包
+
+首次打包前需要安装 PyInstaller：
+
+```bash
+python -m pip install pyinstaller
+```
+
+打包当前版本：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\build-windows.ps1 -Version v1.0.0
+```
+
+打包产物会生成到 `dist/LaunchDock-v1.0.0-windows.zip`。脚本会从 `assets/icon.png` 临时派生 `build/launchdock.ico`，不会覆盖或修改原始图标文件，也不会包含用户本机的启动坞数据。
+
+## 发布 Release
+
+发布前先确认：
+
+- `launchdock/__init__.py` 中的 `__version__` 已更新。
+- `development-log.md` 顶部已经添加 `## Version x.x.x - 时间` 正式发布记录。
+- 已运行基础验证：`python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py` 和 `python -m unittest discover -s tests`。
+- 已使用 `scripts\build-windows.ps1` 生成 Windows 压缩包。
+
+GitHub Release 标题建议使用 `LaunchDock v1.0.0`。Release 正文应从上一个 `Version` 发布记录之后到本次发布记录之间提炼重点，保持简短；小型格式、文案和布局调整可以概括为“界面细节优化”。
+
+`v1.0.0` 首次发布正文建议：
+
+```text
+首次正式发布 LaunchDock。
+
+- 支持创建启动坞，并在本地保存多个启动项目。
+- 支持为项目添加、编辑、删除启动项，并一键打开启用的网页链接或本地文件。
+- 支持项目和启动项管理模式，可批量选择和删除。
+- 提供深色 Fluent 风格界面、关于页、版本检查入口和基础多语言界面。
+```
+
 ## 应用图标
 
 应用图标文件为 `assets/icon.png`。当前运行时会将它设置为窗口图标；后续打包为桌面软件时，也应继续使用该文件作为软件图标源。图标源推荐使用带透明通道的 PNG；如果源图缺少透明通道，程序运行时会尝试基于角落背景色临时剔除纯色背景，但不会修改原始图标文件。

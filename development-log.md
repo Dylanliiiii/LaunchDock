@@ -17,13 +17,42 @@
 
 - 将项目版本号升级为 `v1.0.0`，作为第一次正式发布版本。
 - 关于页中的版本显示改为仅展示当前版本号，不再附带开发版字样。
-- 约定后续版本号更新规则：`1.x.x` 用于大改或不兼容变更，`0.x.0` 用于新功能，`0.0.x` 用于 bug 修复。
+- 约定后续版本号更新规则：主版本号用于大改或不兼容变更，次版本号用于新功能，修订号用于 bug 修复。例如当前版本为 `1.0.0` 时，大改发布为 `2.0.0`，新功能发布为 `1.1.0`，bug 修复发布为 `1.0.1`。
 - 首次正式发布说明仅保留重点内容，后续小型格式修正和局部调整继续记录在普通开发日志中。
 
 ### 验证情况
 
 - 已更新版本常量与关于页显示文案。
 - 本次为正式发布记录，未额外运行回归测试。
+
+## 2026-06-14 20:32:43 +08:00
+
+### 修改范围
+
+- Windows 打包脚本
+- GitHub Release 发布说明
+- 项目发布约定
+
+### 涉及文件
+
+- `scripts/build-windows.ps1`
+- `README.md`
+- `AGENTS.md`
+- `.agents/skills/launchdock-project/SKILL.md`
+- `development-log.md`
+
+### 具体内容
+
+- 新增 Windows 打包脚本，使用 PyInstaller 生成 `dist/LaunchDock-v版本号-windows.zip`。
+- 打包脚本会从 `assets/icon.png` 临时派生 `build/launchdock.ico`，不覆盖原始图标源文件。
+- 在 README 中补充打包步骤、Release 发布检查项和 `v1.0.0` 首次发布正文建议。
+- 将 GitHub 仓库地址、版本号规则、Release 正文提炼规则和打包产物注意事项写入项目协作说明和项目专属 Skill。
+
+### 验证情况
+
+- 已安装 PyInstaller 并运行 `powershell -ExecutionPolicy Bypass -File scripts\build-windows.ps1 -Version v1.0.0`，成功生成 `dist/LaunchDock-v1.0.0-windows.zip`。
+- 当前环境缺少 GitHub CLI，且未配置 `GITHUB_TOKEN`，暂未直接创建 GitHub Release。
+- 本次为日常发布流程补充，未更新项目版本号。
 
 ## 2026-06-14 20:03:54 +08:00
 
