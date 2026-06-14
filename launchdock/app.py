@@ -2,16 +2,20 @@ from __future__ import annotations
 
 import os
 import locale
+import json
 import subprocess
 import sys
 import webbrowser
+from threading import Thread
 from functools import lru_cache
 from pathlib import Path
 from urllib.parse import urlparse
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QObject, QTimer, Qt, Signal
 from PySide6.QtGui import QColor, QIcon, QImage, QPixmap
-from PySide6.QtWidgets import QApplication, QFileDialog, QFrame, QHBoxLayout, QMessageBox, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QApplication, QFileDialog, QFrame, QHBoxLayout, QLabel, QMessageBox, QVBoxLayout, QWidget
 from qfluentwidgets import (
     BodyLabel,
     CardWidget,
@@ -27,6 +31,7 @@ from qfluentwidgets import (
     LineEdit,
     NavigationItemPosition,
     PrimaryPushButton,
+    PushButton,
     SmoothScrollArea,
     SubtitleLabel,
     SwitchButton,
@@ -40,10 +45,17 @@ from qfluentwidgets import (
 
 from .models import Link, Project
 from .storage import DockStorage, StorageError, load_app_config, save_app_config, save_dock_path
+from . import __version__
 
 ACCENT_COLOR = "#00c8d7"
 APP_ICON_PATH = Path(__file__).resolve().parent.parent / "assets" / "icon.png"
 BACKGROUND_REMOVE_THRESHOLD = 34
+GITHUB_REPO_URL = "https://github.com/Dylanliiiii/LaunchDock"
+GITHUB_RELEASES_URL = f"{GITHUB_REPO_URL}/releases"
+GITHUB_LATEST_RELEASE_API = "https://api.github.com/repos/Dylanliiiii/LaunchDock/releases/latest"
+NAVIGATION_EXPAND_MIN_WIDTH = 176
+NAVIGATION_EXPAND_MAX_WIDTH = 280
+NAVIGATION_TEXT_EXTRA_WIDTH = 118
 THEME_OPTIONS = {
     "light": "浅色",
     "dark": "深色",
@@ -61,6 +73,10 @@ SUPPORTED_LANGUAGES = (*LANGUAGE_NATIVE_NAMES.keys(), "system")
 TEXT = {
     "zh_cn": {
         "launch_title": "启动项目",
+        "nav_launch": "启动项目",
+        "nav_dock": "启动坞",
+        "nav_about": "关于",
+        "nav_settings": "设置",
         "launch_desc": "选择一个项目，一键打开它的网页链接和本地文件。",
         "new": "新建",
         "manage_projects": "管理项目",
@@ -84,6 +100,10 @@ TEXT = {
     },
     "zh_tw": {
         "launch_title": "啟動專案",
+        "nav_launch": "啟動專案",
+        "nav_dock": "啟動塢",
+        "nav_about": "關於",
+        "nav_settings": "設定",
         "launch_desc": "選擇一個專案，一鍵開啟它的網頁連結和本機檔案。",
         "new": "新增",
         "manage_projects": "管理專案",
@@ -107,6 +127,10 @@ TEXT = {
     },
     "en": {
         "launch_title": "Launch Projects",
+        "nav_launch": "Projects",
+        "nav_dock": "Dock",
+        "nav_about": "About",
+        "nav_settings": "Settings",
         "launch_desc": "Choose a project and open its web links and local files with one click.",
         "new": "New",
         "manage_projects": "Manage Projects",
@@ -130,6 +154,10 @@ TEXT = {
     },
     "ja": {
         "launch_title": "起動プロジェクト",
+        "nav_launch": "起動",
+        "nav_dock": "ドック",
+        "nav_about": "概要",
+        "nav_settings": "設定",
         "launch_desc": "プロジェクトを選び、Webリンクとローカルファイルをワンクリックで開きます。",
         "new": "新規",
         "manage_projects": "プロジェクト管理",
@@ -153,6 +181,10 @@ TEXT = {
     },
     "ko": {
         "launch_title": "프로젝트 실행",
+        "nav_launch": "실행",
+        "nav_dock": "도크",
+        "nav_about": "정보",
+        "nav_settings": "설정",
         "launch_desc": "프로젝트를 선택하고 웹 링크와 로컬 파일을 한 번에 엽니다.",
         "new": "새로 만들기",
         "manage_projects": "프로젝트 관리",
@@ -176,6 +208,10 @@ TEXT = {
     },
     "es": {
         "launch_title": "Proyectos de inicio",
+        "nav_launch": "Proyectos",
+        "nav_dock": "Dock",
+        "nav_about": "Acerca",
+        "nav_settings": "Ajustes",
         "launch_desc": "Elige un proyecto y abre sus enlaces web y archivos locales con un clic.",
         "new": "Nuevo",
         "manage_projects": "Gestionar proyectos",
@@ -222,12 +258,32 @@ TEXT_EXTRA = {
         "manage_links": "管理启动项",
         "launch": "启动",
         "dock_title": "启动坞",
+        "dock_desc": "选择或创建一个本地文件夹，用来保存所有启动项目和配置。",
         "current_dock_path": "当前启动坞路径",
         "dock_structure": "启动坞结构",
         "dock_structure_desc": "launchdock.json 保存全局配置；projects/ 下每个项目拥有独立文件夹和 project.json。",
         "dock_not_created": "尚未创建启动坞。请先选择一个本地文件夹，用来保存后续创建的启动项目。",
         "about_title": "关于 LaunchDock",
         "about_desc": "一个本地启动坞，用于管理学习和工作项目中的网页链接、本地文件，并一键启动。",
+        "version_label": "v{version}",
+        "check_update": "检查新版本",
+        "github_link": "GitHub",
+        "share_download_link": "分享下载链接",
+        "update_placeholder_title": "版本更新",
+        "update_placeholder_desc": "当前还没有检查到新版本。发布 GitHub Release 后，这里会显示版本跨度和发布说明。",
+        "checking_update": "正在检查新版本...",
+        "no_release_title": "暂无发布版本",
+        "no_release_desc": "GitHub 仓库还没有发布 Release。之后发布 Release 后即可检查更新。",
+        "no_update_title": "已是当前版本",
+        "no_update_desc": "当前版本 v{current} 已是最新发布版本。",
+        "update_available_title": "发现新版本",
+        "update_available_desc": "可从 v{current} 更新到 {latest}。",
+        "update_changelog_title": "新版本改动内容",
+        "update_check_failed_title": "检查更新失败",
+        "update_check_failed_desc": "无法连接 GitHub Release，请稍后再试：{error}",
+        "open_release_prompt": "是否打开下载页面？",
+        "download_link_copied": "下载链接已复制",
+        "download_link_copied_desc": "已复制 GitHub Releases 下载页面链接。",
         "dialog_save": "保存",
         "dialog_cancel": "取消",
         "link_default_open": "启动项目时默认打开",
@@ -305,12 +361,32 @@ TEXT_EXTRA = {
         "manage_links": "管理啟動項",
         "launch": "啟動",
         "dock_title": "啟動塢",
+        "dock_desc": "選擇或建立一個本機資料夾，用來儲存所有啟動專案和設定。",
         "current_dock_path": "目前啟動塢路徑",
         "dock_structure": "啟動塢結構",
         "dock_structure_desc": "launchdock.json 保存全域設定；projects/ 下每個專案都有獨立資料夾和 project.json。",
         "dock_not_created": "尚未建立啟動塢。請先選擇一個本機資料夾，用來保存後續建立的啟動專案。",
         "about_title": "關於 LaunchDock",
         "about_desc": "一個本機啟動塢，用於管理學習和工作專案中的網頁連結、本機檔案，並一鍵啟動。",
+        "version_label": "v{version}",
+        "check_update": "檢查新版本",
+        "github_link": "GitHub",
+        "share_download_link": "分享下載連結",
+        "update_placeholder_title": "版本更新",
+        "update_placeholder_desc": "目前還沒有檢查到新版本。發布 GitHub Release 後，這裡會顯示版本跨度和發布說明。",
+        "checking_update": "正在檢查新版本...",
+        "no_release_title": "暫無發布版本",
+        "no_release_desc": "GitHub 倉庫還沒有發布 Release。之後發布 Release 後即可檢查更新。",
+        "no_update_title": "已是目前版本",
+        "no_update_desc": "目前版本 v{current} 已是最新發布版本。",
+        "update_available_title": "發現新版本",
+        "update_available_desc": "可從 v{current} 更新到 {latest}。",
+        "update_changelog_title": "新版本變更內容",
+        "update_check_failed_title": "檢查更新失敗",
+        "update_check_failed_desc": "無法連接 GitHub Release，請稍後再試：{error}",
+        "open_release_prompt": "是否開啟下載頁面？",
+        "download_link_copied": "下載連結已複製",
+        "download_link_copied_desc": "已複製 GitHub Releases 下載頁面連結。",
         "dialog_save": "儲存",
         "dialog_cancel": "取消",
         "link_default_open": "啟動專案時預設開啟",
@@ -388,12 +464,32 @@ TEXT_EXTRA = {
         "manage_links": "Manage Items",
         "launch": "Launch",
         "dock_title": "Dock",
+        "dock_desc": "Choose or create a local folder to store all launch projects and settings.",
         "current_dock_path": "Current Dock Path",
         "dock_structure": "Dock Structure",
         "dock_structure_desc": "launchdock.json stores global settings; every project under projects/ has its own folder and project.json.",
         "dock_not_created": "No dock has been created yet. Choose a local folder first to store launch projects.",
         "about_title": "About LaunchDock",
         "about_desc": "A local dock for managing web links and local files in study and work projects, then launching them with one click.",
+        "version_label": "v{version}",
+        "check_update": "Check for Updates",
+        "github_link": "GitHub",
+        "share_download_link": "Share Download Link",
+        "update_placeholder_title": "Version Updates",
+        "update_placeholder_desc": "No new version has been detected yet. After a GitHub Release is published, version changes and release notes will appear here.",
+        "checking_update": "Checking for updates...",
+        "no_release_title": "No Releases Yet",
+        "no_release_desc": "This GitHub repository has no Release yet. Update checks will work after a Release is published.",
+        "no_update_title": "Up to Date",
+        "no_update_desc": "Current version v{current} is the latest published version.",
+        "update_available_title": "New Version Available",
+        "update_available_desc": "Update from v{current} to {latest}.",
+        "update_changelog_title": "Release Notes",
+        "update_check_failed_title": "Update Check Failed",
+        "update_check_failed_desc": "Could not connect to GitHub Releases. Try again later: {error}",
+        "open_release_prompt": "Open the download page?",
+        "download_link_copied": "Download Link Copied",
+        "download_link_copied_desc": "The GitHub Releases download page link has been copied.",
         "dialog_save": "Save",
         "dialog_cancel": "Cancel",
         "link_default_open": "Open by default when launching project",
@@ -471,12 +567,32 @@ TEXT_EXTRA = {
         "manage_links": "起動項目を管理",
         "launch": "起動",
         "dock_title": "ドック",
+        "dock_desc": "すべての起動プロジェクトと設定を保存するローカルフォルダーを選択または作成します。",
         "current_dock_path": "現在のドックパス",
         "dock_structure": "ドック構造",
         "dock_structure_desc": "launchdock.json は全体設定を保存し、projects/ 配下の各プロジェクトは独立したフォルダーと project.json を持ちます。",
         "dock_not_created": "ドックはまだ作成されていません。今後作成する起動プロジェクトを保存するため、先にローカルフォルダーを選択してください。",
         "about_title": "LaunchDock について",
         "about_desc": "学習や仕事のプロジェクト内のWebリンクとローカルファイルを管理し、ワンクリックで起動するローカルドックです。",
+        "version_label": "v{version}",
+        "check_update": "新しいバージョンを確認",
+        "github_link": "GitHub",
+        "share_download_link": "ダウンロードリンクを共有",
+        "update_placeholder_title": "バージョン更新",
+        "update_placeholder_desc": "まだ新しいバージョンは検出されていません。GitHub Release を公開すると、ここにバージョン差分とリリースノートが表示されます。",
+        "checking_update": "新しいバージョンを確認しています...",
+        "no_release_title": "リリースはまだありません",
+        "no_release_desc": "GitHub リポジトリにはまだ Release がありません。Release 公開後に更新確認が利用できます。",
+        "no_update_title": "最新版です",
+        "no_update_desc": "現在のバージョン v{current} は最新の公開バージョンです。",
+        "update_available_title": "新しいバージョンがあります",
+        "update_available_desc": "v{current} から {latest} に更新できます。",
+        "update_changelog_title": "新バージョンの変更内容",
+        "update_check_failed_title": "更新確認に失敗しました",
+        "update_check_failed_desc": "GitHub Release に接続できません。後でもう一度お試しください：{error}",
+        "open_release_prompt": "ダウンロードページを開きますか？",
+        "download_link_copied": "ダウンロードリンクをコピーしました",
+        "download_link_copied_desc": "GitHub Releases のダウンロードページリンクをコピーしました。",
         "dialog_save": "保存",
         "dialog_cancel": "キャンセル",
         "link_default_open": "プロジェクト起動時に既定で開く",
@@ -554,12 +670,32 @@ TEXT_EXTRA = {
         "manage_links": "항목 관리",
         "launch": "실행",
         "dock_title": "도크",
+        "dock_desc": "모든 실행 프로젝트와 설정을 저장할 로컬 폴더를 선택하거나 만듭니다.",
         "current_dock_path": "현재 도크 경로",
         "dock_structure": "도크 구조",
         "dock_structure_desc": "launchdock.json은 전역 설정을 저장하고, projects/ 아래의 각 프로젝트는 독립 폴더와 project.json을 가집니다.",
         "dock_not_created": "아직 도크가 없습니다. 이후 생성할 실행 프로젝트를 저장할 로컬 폴더를 먼저 선택하세요.",
         "about_title": "LaunchDock 정보",
         "about_desc": "학습 및 업무 프로젝트의 웹 링크와 로컬 파일을 관리하고 한 번에 실행하는 로컬 도크입니다.",
+        "version_label": "v{version}",
+        "check_update": "새 버전 확인",
+        "github_link": "GitHub",
+        "share_download_link": "다운로드 링크 공유",
+        "update_placeholder_title": "버전 업데이트",
+        "update_placeholder_desc": "아직 새 버전을 확인하지 못했습니다. GitHub Release를 게시하면 버전 변경과 릴리스 노트가 여기에 표시됩니다.",
+        "checking_update": "새 버전을 확인하는 중...",
+        "no_release_title": "아직 릴리스가 없습니다",
+        "no_release_desc": "GitHub 저장소에 아직 Release가 없습니다. Release 게시 후 업데이트 확인을 사용할 수 있습니다.",
+        "no_update_title": "최신 버전입니다",
+        "no_update_desc": "현재 버전 v{current}은 최신 게시 버전입니다.",
+        "update_available_title": "새 버전 발견",
+        "update_available_desc": "v{current}에서 {latest}(으)로 업데이트할 수 있습니다.",
+        "update_changelog_title": "새 버전 변경 내용",
+        "update_check_failed_title": "업데이트 확인 실패",
+        "update_check_failed_desc": "GitHub Release에 연결할 수 없습니다. 나중에 다시 시도하세요: {error}",
+        "open_release_prompt": "다운로드 페이지를 열까요?",
+        "download_link_copied": "다운로드 링크 복사됨",
+        "download_link_copied_desc": "GitHub Releases 다운로드 페이지 링크를 복사했습니다.",
         "dialog_save": "저장",
         "dialog_cancel": "취소",
         "link_default_open": "프로젝트 실행 시 기본으로 열기",
@@ -637,12 +773,32 @@ TEXT_EXTRA = {
         "manage_links": "Gestionar elementos",
         "launch": "Iniciar",
         "dock_title": "Dock",
+        "dock_desc": "Elige o crea una carpeta local para guardar todos los proyectos de inicio y ajustes.",
         "current_dock_path": "Ruta actual del dock",
         "dock_structure": "Estructura del dock",
         "dock_structure_desc": "launchdock.json guarda la configuración global; cada proyecto en projects/ tiene su propia carpeta y project.json.",
         "dock_not_created": "Aún no se ha creado un dock. Elige primero una carpeta local para guardar los proyectos de inicio.",
         "about_title": "Acerca de LaunchDock",
         "about_desc": "Un dock local para gestionar enlaces web y archivos locales de estudio y trabajo, e iniciarlos con un clic.",
+        "version_label": "v{version}",
+        "check_update": "Buscar actualización",
+        "github_link": "GitHub",
+        "share_download_link": "Compartir enlace",
+        "update_placeholder_title": "Actualizaciones",
+        "update_placeholder_desc": "Aún no se ha detectado una nueva versión. Cuando se publique un GitHub Release, aquí aparecerán el cambio de versión y las notas.",
+        "checking_update": "Buscando actualizaciones...",
+        "no_release_title": "Sin versiones publicadas",
+        "no_release_desc": "Este repositorio de GitHub todavía no tiene Release. La comprobación funcionará cuando se publique una.",
+        "no_update_title": "Actualizado",
+        "no_update_desc": "La versión actual v{current} ya es la última publicada.",
+        "update_available_title": "Nueva versión disponible",
+        "update_available_desc": "Puedes actualizar de v{current} a {latest}.",
+        "update_changelog_title": "Cambios de la nueva versión",
+        "update_check_failed_title": "No se pudo buscar actualización",
+        "update_check_failed_desc": "No se pudo conectar a GitHub Releases. Inténtalo más tarde: {error}",
+        "open_release_prompt": "¿Abrir la página de descarga?",
+        "download_link_copied": "Enlace copiado",
+        "download_link_copied_desc": "Se copió el enlace de la página de descargas de GitHub Releases.",
         "dialog_save": "Guardar",
         "dialog_cancel": "Cancelar",
         "link_default_open": "Abrir por defecto al iniciar el proyecto",
@@ -772,6 +928,49 @@ def language_options(language: str) -> dict[str, str]:
     options = dict(LANGUAGE_NATIVE_NAMES)
     options["system"] = tr(language, "system_language")
     return options
+
+
+def version_parts(version: str) -> tuple[int, ...]:
+    cleaned = version.strip().lower().lstrip("v")
+    parts: list[int] = []
+    for item in cleaned.replace("-", ".").split("."):
+        if not item.isdigit():
+            break
+        parts.append(int(item))
+    return tuple(parts or [0])
+
+
+def is_newer_version(latest: str, current: str) -> bool:
+    latest_parts = version_parts(latest)
+    current_parts = version_parts(current)
+    length = max(len(latest_parts), len(current_parts))
+    return latest_parts + (0,) * (length - len(latest_parts)) > current_parts + (0,) * (length - len(current_parts))
+
+
+def fetch_latest_release() -> dict[str, object]:
+    request = Request(GITHUB_LATEST_RELEASE_API, headers={"Accept": "application/vnd.github+json", "User-Agent": "LaunchDock"})
+    try:
+        with urlopen(request, timeout=8) as response:
+            data = json.loads(response.read().decode("utf-8"))
+    except HTTPError as exc:
+        if exc.code == 404:
+            return {"status": "none"}
+        raise
+    tag_name = str(data.get("tag_name") or "")
+    html_url = str(data.get("html_url") or GITHUB_RELEASES_URL)
+    body = str(data.get("body") or "").strip()
+    return {
+        "status": "ok",
+        "tag_name": tag_name,
+        "html_url": html_url,
+        "body": body,
+        "is_newer": is_newer_version(tag_name, __version__) if tag_name else False,
+    }
+
+
+class UpdateSignals(QObject):
+    checked = Signal(dict)
+    failed = Signal(dict)
 
 
 def is_checked_state(state: object) -> bool:
@@ -944,6 +1143,7 @@ class LaunchInterface(QWidget):
         self.content_layout = QVBoxLayout(self.content)
         self.content_layout.setContentsMargins(0, 0, 14, 0)
         self.content_layout.setSpacing(14)
+        self.project_count_labels: dict[str, CaptionLabel] = {}
         self.scroll.setWidget(self.content)
         root.addWidget(self.scroll, 1)
 
@@ -957,6 +1157,7 @@ class LaunchInterface(QWidget):
         self.delete_selected_button.setVisible(has_launch_dock and self.app_window.manage_mode)
         self.done_button.setVisible(has_launch_dock and self.app_window.manage_mode)
         clear_layout(self.content_layout)
+        self.project_count_labels.clear()
         if not has_launch_dock:
             self.content_layout.addWidget(self.launch_dock_required_card(self.app_window.storage.missing_dock_path))
             self.content_layout.addStretch(1)
@@ -1025,7 +1226,9 @@ class LaunchInterface(QWidget):
         title_box.setSpacing(3)
         title_box.addWidget(SubtitleLabel(project.name, card))
         default_count = len([link for link in project.links if link.default_open])
-        title_box.addWidget(CaptionLabel(self.app_window.text("link_count", total=len(project.links), enabled=default_count), card))
+        count_label = CaptionLabel(self.app_window.text("link_count", total=len(project.links), enabled=default_count), card)
+        self.project_count_labels[project.id] = count_label
+        title_box.addWidget(count_label)
         header.addLayout(title_box, 1)
 
         edit_button = TransparentToolButton(FluentIcon.EDIT, card)
@@ -1045,7 +1248,13 @@ class LaunchInterface(QWidget):
                 for link in sorted(project.links, key=lambda item: item.order):
                     layout.addWidget(self.link_row(project, link))
             else:
-                layout.addWidget(CaptionLabel(self.app_window.text("empty_project_desc"), card))
+                empty_row = QHBoxLayout()
+                empty_row.setContentsMargins(0, 0, 0, 0)
+                empty_row.addSpacing(12)
+                empty_label = CaptionLabel(self.app_window.text("empty_project_desc"), card)
+                empty_label.setWordWrap(True)
+                empty_row.addWidget(empty_label, 1)
+                layout.addLayout(empty_row)
 
         footer = QHBoxLayout()
         link_manage_active = self.app_window.link_manage_project_id == project.id
@@ -1118,6 +1327,13 @@ class LaunchInterface(QWidget):
         layout.addWidget(switch)
         return row
 
+    def refresh_project_count(self, project: Project) -> None:
+        count_label = self.project_count_labels.get(project.id)
+        if not count_label:
+            return
+        enabled_count = len([link for link in project.links if link.default_open])
+        count_label.setText(self.app_window.text("link_count", total=len(project.links), enabled=enabled_count))
+
 
 class DockInterface(QWidget):
     def __init__(self, app_window: "LaunchDockApp") -> None:
@@ -1129,7 +1345,13 @@ class DockInterface(QWidget):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(18)
-        layout.addWidget(TitleLabel(self.app_window.text("dock_title"), self))
+        title_box = QVBoxLayout()
+        title_box.setSpacing(4)
+        title_box.addWidget(TitleLabel(self.app_window.text("dock_title"), self))
+        dock_desc = CaptionLabel(self.app_window.text("dock_desc"), self)
+        dock_desc.setWordWrap(True)
+        title_box.addWidget(dock_desc)
+        layout.addLayout(title_box)
 
         self.path_label = BodyLabel("", self)
         self.path_label.setWordWrap(True)
@@ -1176,16 +1398,65 @@ class AboutInterface(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(18)
         layout.addWidget(TitleLabel(self.app_window.text("about_title"), self))
+
         card = CardWidget(self)
-        card_layout = QVBoxLayout(card)
-        card_layout.setContentsMargins(18, 16, 18, 16)
-        card_layout.setSpacing(10)
-        card_layout.addWidget(SubtitleLabel("LaunchDock", card))
-        body = BodyLabel(self.app_window.text("about_desc"), card)
-        body.setWordWrap(True)
-        card_layout.addWidget(body)
+        card_layout = QHBoxLayout(card)
+        card_layout.setContentsMargins(22, 18, 22, 18)
+        card_layout.setSpacing(16)
+
+        icon_label = QLabel(card)
+        icon = app_icon()
+        if not icon.isNull():
+            icon_label.setPixmap(icon.pixmap(56, 56))
+        icon_label.setFixedSize(64, 64)
+        icon_label.setAlignment(Qt.AlignCenter)
+        card_layout.addWidget(icon_label, 0, Qt.AlignVCenter)
+
+        info_box = QVBoxLayout()
+        info_box.setSpacing(3)
+        info_box.addWidget(SubtitleLabel("LaunchDock", card))
+        info_box.addWidget(CaptionLabel(self.app_window.text("version_label", version=__version__), card))
+        intro = BodyLabel(self.app_window.text("about_desc"), card)
+        intro.setWordWrap(True)
+        info_box.addWidget(intro)
+        card_layout.addLayout(info_box, 1)
+
+        check_button = PushButton(FluentIcon.SYNC, self.app_window.text("check_update"), card)
+        check_button.clicked.connect(lambda: self.app_window.check_for_updates(manual=True))
+        github_button = PushButton(FluentIcon.GITHUB, self.app_window.text("github_link"), card)
+        github_button.clicked.connect(self.app_window.open_github)
+        share_button = PushButton(FluentIcon.SHARE, self.app_window.text("share_download_link"), card)
+        share_button.clicked.connect(self.app_window.copy_download_link)
+        for button in (check_button, github_button, share_button):
+            button.setFixedHeight(38)
+        card_layout.addWidget(check_button, 0, Qt.AlignVCenter)
+        card_layout.addWidget(github_button, 0, Qt.AlignVCenter)
+        card_layout.addWidget(share_button, 0, Qt.AlignVCenter)
+        self.check_button = check_button
+
         layout.addWidget(card)
+
+        update_card = CardWidget(self)
+        update_layout = QVBoxLayout(update_card)
+        update_layout.setContentsMargins(18, 16, 18, 16)
+        update_layout.setSpacing(10)
+        self.update_title = SubtitleLabel(self.app_window.text("update_placeholder_title"), update_card)
+        self.update_body = BodyLabel(self.app_window.text("update_placeholder_desc"), update_card)
+        self.update_body.setWordWrap(True)
+        update_layout.addWidget(self.update_title)
+        update_layout.addWidget(self.update_body)
+        layout.addWidget(update_card)
         layout.addStretch(1)
+
+    def set_checking(self) -> None:
+        self.check_button.setEnabled(False)
+        self.update_title.setText(self.app_window.text("check_update"))
+        self.update_body.setText(self.app_window.text("checking_update"))
+
+    def set_update_result(self, title: str, body: str) -> None:
+        self.check_button.setEnabled(True)
+        self.update_title.setText(title)
+        self.update_body.setText(body)
 
 
 class SettingsInterface(QWidget):
@@ -1288,6 +1559,10 @@ class LaunchDockApp(FluentWindow):
         self.collapsed_project_ids: set[str] = set()
         self.link_manage_project_id: str | None = None
         self.selected_link_ids_by_project: dict[str, set[str]] = {}
+        self.update_check_running = False
+        self.update_signals = UpdateSignals(self)
+        self.update_signals.checked.connect(self.on_update_checked)
+        self.update_signals.failed.connect(self.on_update_failed)
 
         self.setWindowTitle("LaunchDock")
         icon = app_icon()
@@ -1308,18 +1583,34 @@ class LaunchDockApp(FluentWindow):
         self.about_interface = AboutInterface(self)
         self.settings_interface = SettingsInterface(self)
 
-        self.addSubInterface(self.launch_interface, FluentIcon.PLAY_SOLID, self.text("launch_title"), NavigationItemPosition.TOP)
-        self.addSubInterface(self.dock_interface, FluentIcon.FOLDER, self.text("dock"), NavigationItemPosition.TOP)
-        self.addSubInterface(self.about_interface, FluentIcon.HELP, self.text("about"), NavigationItemPosition.BOTTOM)
-        self.addSubInterface(self.settings_interface, FluentIcon.SETTING, self.text("settings"), NavigationItemPosition.BOTTOM)
+        self.addSubInterface(self.launch_interface, FluentIcon.PLAY_SOLID, self.text("nav_launch"), NavigationItemPosition.TOP)
+        self.addSubInterface(self.dock_interface, FluentIcon.FOLDER, self.text("nav_dock"), NavigationItemPosition.TOP)
+        self.addSubInterface(self.about_interface, FluentIcon.HELP, self.text("nav_about"), NavigationItemPosition.BOTTOM)
+        self.addSubInterface(self.settings_interface, FluentIcon.SETTING, self.text("nav_settings"), NavigationItemPosition.BOTTOM)
+        self.adjust_navigation_expand_width()
 
         self.load_data()
+        self.switchTo(self.about_interface)
+        QTimer.singleShot(1200, lambda: self.check_for_updates(manual=False))
 
     def has_launch_dock(self) -> bool:
         return self.storage.dock_path is not None
 
     def text(self, key: str, **kwargs: object) -> str:
         return tr(self.user_settings["language"], key, **kwargs)
+
+    def adjust_navigation_expand_width(self) -> int:
+        labels = [
+            self.text("nav_launch"),
+            self.text("nav_dock"),
+            self.text("nav_about"),
+            self.text("nav_settings"),
+        ]
+        max_text_width = max(self.fontMetrics().horizontalAdvance(label) for label in labels)
+        width = max(NAVIGATION_EXPAND_MIN_WIDTH, min(max_text_width + NAVIGATION_TEXT_EXTRA_WIDTH, NAVIGATION_EXPAND_MAX_WIDTH))
+        self.navigationInterface.setExpandWidth(width)
+        self.navigationInterface.setMinimumExpandWidth(0)
+        return width
 
     def update_theme_setting(self, theme_key: str) -> None:
         self.user_settings["theme"] = theme_key
@@ -1339,6 +1630,76 @@ class LaunchDockApp(FluentWindow):
             return
         self.settings_interface.refresh()
         self.show_warning(self.text("language_restart_title"), self.text("language_restart_desc"))
+
+    def open_github(self) -> None:
+        webbrowser.open_new_tab(GITHUB_REPO_URL)
+
+    def copy_download_link(self) -> None:
+        QApplication.clipboard().setText(GITHUB_RELEASES_URL)
+        InfoBar.success(
+            self.text("download_link_copied"),
+            self.text("download_link_copied_desc"),
+            position=InfoBarPosition.TOP_RIGHT,
+            parent=self,
+        )
+
+    def check_for_updates(self, manual: bool = False) -> None:
+        if self.update_check_running:
+            return
+        self.update_check_running = True
+        if manual:
+            self.about_interface.set_checking()
+
+        def worker() -> None:
+            try:
+                result = fetch_latest_release()
+                result["manual"] = manual
+                self.update_signals.checked.emit(result)
+            except (HTTPError, URLError, OSError, json.JSONDecodeError) as exc:
+                self.update_signals.failed.emit({"manual": manual, "error": str(exc)})
+
+        Thread(target=worker, daemon=True).start()
+
+    def on_update_checked(self, result: dict[str, object]) -> None:
+        self.update_check_running = False
+        manual = bool(result.get("manual"))
+        status = str(result.get("status") or "")
+        if status == "none":
+            self.about_interface.set_update_result(self.text("no_release_title"), self.text("no_release_desc"))
+            if manual:
+                self.show_warning(self.text("no_release_title"), self.text("no_release_desc"))
+            return
+
+        latest = str(result.get("tag_name") or "")
+        release_url = str(result.get("html_url") or GITHUB_RELEASES_URL)
+        body = str(result.get("body") or "").strip() or self.text("update_placeholder_desc")
+        if bool(result.get("is_newer")):
+            title = self.text("update_available_desc", current=__version__, latest=latest)
+            content = f"{self.text('update_changelog_title')}\n{body}"
+            self.about_interface.set_update_result(title, content)
+            if self.confirm_action(self.text("update_available_title"), f"{title}\n\n{self.text('open_release_prompt')}"):
+                webbrowser.open_new_tab(release_url)
+            return
+
+        self.about_interface.set_update_result(
+            self.text("no_update_title"),
+            self.text("no_update_desc", current=__version__),
+        )
+        if manual:
+            InfoBar.success(
+                self.text("no_update_title"),
+                self.text("no_update_desc", current=__version__),
+                position=InfoBarPosition.TOP_RIGHT,
+                parent=self,
+            )
+
+    def on_update_failed(self, result: dict[str, object]) -> None:
+        self.update_check_running = False
+        manual = bool(result.get("manual"))
+        message = self.text("update_check_failed_desc", error=result.get("error", ""))
+        if manual:
+            self.about_interface.set_update_result(self.text("update_check_failed_title"), message)
+            self.show_warning(self.text("update_check_failed_title"), message)
 
     def load_data(self) -> None:
         if not self.has_launch_dock():
@@ -1592,6 +1953,7 @@ class LaunchDockApp(FluentWindow):
     def toggle_link(self, project: Project, link: Link, checked: bool) -> None:
         link.default_open = checked
         self.save_project(project, refresh=False)
+        self.launch_interface.refresh_project_count(project)
 
     def save_project(self, project: Project, refresh: bool = True) -> None:
         if not self.has_launch_dock():

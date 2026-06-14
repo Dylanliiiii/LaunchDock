@@ -1,5 +1,208 @@
 # Development Log
 
+## Version 1.0.0 - 2026-06-14 20:24:33 +08:00
+
+### 修改范围
+
+- 首次正式发布
+- 版本号规则说明
+
+### 涉及文件
+
+- `launchdock/__init__.py`
+- `launchdock/app.py`
+- `development-log.md`
+
+### 具体内容
+
+- 将项目版本号升级为 `v1.0.0`，作为第一次正式发布版本。
+- 关于页中的版本显示改为仅展示当前版本号，不再附带开发版字样。
+- 约定后续版本号更新规则：`1.x.x` 用于大改或不兼容变更，`0.x.0` 用于新功能，`0.0.x` 用于 bug 修复。
+- 首次正式发布说明仅保留重点内容，后续小型格式修正和局部调整继续记录在普通开发日志中。
+
+### 验证情况
+
+- 已更新版本常量与关于页显示文案。
+- 本次为正式发布记录，未额外运行回归测试。
+
+## 2026-06-14 20:03:54 +08:00
+
+### 修改范围
+
+- 启动项开关状态统计刷新
+
+### 涉及文件
+
+- `launchdock/app.py`
+- `development-log.md`
+
+### 具体内容
+
+- 在启动项目卡片渲染时记录每个项目的启动项统计标签。
+- 通过右侧开关启用或停用启动项后，保存项目数据并即时刷新当前项目的“已启用”数量。
+- 保持开关操作不重建整张项目卡片，避免不必要的界面闪动。
+
+### 验证情况
+
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过。
+- 本次为日常开发修改，未更新项目版本号。
+
+## 2026-06-14 19:54:49 +08:00
+
+### 修改范围
+
+- 启动项目卡片空状态对齐
+
+### 涉及文件
+
+- `launchdock/app.py`
+- `development-log.md`
+
+### 具体内容
+
+- 将空项目提示改为 12px 左侧间距，使其与上方项目名称和“0 个启动项，0 个已启用”的文字左侧对齐，而不是与下方按钮区域对齐。
+- 使用 Qt offscreen 坐标检查确认三行文字在卡片内的左侧坐标一致。
+
+### 验证情况
+
+- 已运行 Qt offscreen 坐标检查，项目名、统计行和空项目提示在卡片内的左侧坐标均为 30。
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过。
+- 本次为日常开发修改，未更新项目版本号。
+
+## 2026-06-14 19:51:16 +08:00
+
+### 修改范围
+
+- 启动项目卡片空状态对齐
+
+### 涉及文件
+
+- `launchdock/app.py`
+- `development-log.md`
+
+### 具体内容
+
+- 移除空项目提示前额外添加的 40px 缩进，使“这个项目还没有启动项”与上方项目名称和统计信息左侧对齐。
+
+### 验证情况
+
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过。
+- 本次为日常开发修改，未更新项目版本号。
+
+## 2026-06-14 19:49:06 +08:00
+
+### 修改范围
+
+- 启动项目卡片空状态对齐
+- 启动坞页面说明文案
+
+### 涉及文件
+
+- `launchdock/app.py`
+- `development-log.md`
+
+### 具体内容
+
+- 将空项目中的“这个项目还没有启动项”提示调整为独立说明行，后续继续微调其左侧对齐。
+- 在“启动坞”页面标题下新增一行简短说明，说明启动坞用于选择或创建本地文件夹来保存启动项目和配置。
+- 为新增启动坞说明补齐简体中文、繁体中文、英文、日语、韩语和西班牙语文案。
+
+### 验证情况
+
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过。
+- 本次为日常开发修改，未更新项目版本号。
+
+## 2026-06-14 19:42:39 +08:00
+
+### 修改范围
+
+- 左侧导航栏展开宽度
+- 多语言导航名称
+- 项目协作说明
+
+### 涉及文件
+
+- `launchdock/app.py`
+- `AGENTS.md`
+- `.agents/skills/launchdock-project/SKILL.md`
+- `development-log.md`
+
+### 具体内容
+
+- 新增导航栏展开宽度计算逻辑，根据当前语言下最长导航名称动态设置展开宽度。
+- 为导航栏设置合理宽度上下限，避免中文界面侧边栏过宽。
+- 新增导航专用短名称，例如英文侧边栏使用 `Projects` 而页面标题仍保留 `Launch Projects`，西班牙语侧边栏使用 `Proyectos` 而页面标题仍保留 `Proyectos de inicio`。
+- 将导航栏多语言长度适配约定同步写入 `AGENTS.md` 和项目专属 Skill。
+
+### 验证情况
+
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过。
+- 已运行 `python -m unittest discover -s tests`，12 个测试全部通过。
+- 已运行 Qt offscreen 多语言冒烟测试，确认简体中文、繁体中文、英文、日语、韩语、西班牙语导航展开宽度均位于设定范围内，且导航文本不会超出侧边栏。
+- 本次为日常开发修改，未更新项目版本号。
+
+## 2026-06-14 19:35:32 +08:00
+
+### 修改范围
+
+- 关于页面按钮样式
+
+### 涉及文件
+
+- `launchdock/app.py`
+- `development-log.md`
+
+### 具体内容
+
+- 将“关于”页面信息卡片右侧的“检查新版本”“GitHub”“分享下载链接”从透明按钮改为 QFluentWidgets `PushButton`。
+- 为三个按钮统一设置 38px 高度，使其拥有类似 OK-WW 参考样式的低对比背景框。
+
+### 验证情况
+
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过。
+- 已运行 `python -m unittest discover -s tests`，12 个测试全部通过。
+- 已运行 Qt offscreen 冒烟测试，确认关于页存在 3 个带背景按钮，按钮文字和高度正常。
+- 本次为日常开发修改，未更新项目版本号。
+
+## 2026-06-14 19:30:34 +08:00
+
+### 修改范围
+
+- 关于页面
+- GitHub Release 更新检查
+- 默认启动页面
+- 测试
+- 项目协作说明
+
+### 涉及文件
+
+- `launchdock/app.py`
+- `tests/test_storage.py`
+- `AGENTS.md`
+- `.agents/skills/launchdock-project/SKILL.md`
+- `development-log.md`
+
+### 具体内容
+
+- 重构“关于”页面：保留页面标题，移除原有简单介绍卡片，新增参考 OK-WW 风格的横向信息卡片。
+- 信息卡片展示软件图标、`LaunchDock` 名称、当前版本号和原介绍内容。
+- 新增带图标的“检查新版本”“GitHub”“分享下载链接”按钮。
+- “分享下载链接”会复制 GitHub Releases 页面链接，便于后续发布版本后分享下载入口。
+- 新增更新信息区域，用于显示版本跨度和新版本改动内容。
+- 新增 GitHub Releases 更新检查逻辑，通过 `releases/latest` 获取最新发布版本、下载页和 release 正文。
+- 手动检查会在关于页显示检查结果；启动后会延迟自动检查，只有发现新版本时才弹窗询问是否打开下载页面。
+- 没有 GitHub Release 时不会误报更新，会显示暂无发布版本。
+- 软件启动后默认切换到“关于”页面。
+- 新增版本比较测试，避免 `0.10.0` 与 `0.2.0` 这类版本号被字符串顺序误判。
+- 将关于页和更新检查约定同步写入 `AGENTS.md` 和项目专属 Skill。
+
+### 验证情况
+
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过。
+- 已运行 `python -m unittest discover -s tests`，12 个测试全部通过。
+- 已运行 Qt offscreen 冒烟测试，确认启动后默认页面为“关于”，并确认关于页更新标题和检查按钮可创建。
+- 本次为日常开发修改，未更新项目版本号。
+
 ## 2026-06-14 19:03:13 +08:00
 
 ### 修改范围
