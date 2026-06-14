@@ -4,7 +4,15 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
-from launchdock.app import is_newer_version, is_valid_target, load_user_settings, normalized_target_text, save_user_setting, tr
+from launchdock.app import (
+    is_newer_version,
+    is_valid_target,
+    latest_tag_from_git_ls_remote,
+    load_user_settings,
+    normalized_target_text,
+    save_user_setting,
+    tr,
+)
 from launchdock.models import Link
 from launchdock.storage import DockStorage, StorageError, save_dock_path
 
@@ -134,6 +142,18 @@ class DockStorageTest(unittest.TestCase):
         self.assertTrue(is_newer_version("0.10.0", "0.2.0"))
         self.assertFalse(is_newer_version("v0.1.5", "0.1.5"))
         self.assertFalse(is_newer_version("v0.1.4", "0.1.5"))
+
+    def test_latest_tag_from_git_ls_remote(self) -> None:
+        output = "\n".join(
+            [
+                "aaa\trefs/tags/v1.0.0",
+                "bbb\trefs/tags/v1.10.0",
+                "ccc\trefs/tags/v1.2.0",
+                "ddd\trefs/tags/not-a-version",
+            ]
+        )
+
+        self.assertEqual(latest_tag_from_git_ls_remote(output), "v1.10.0")
 
 
 if __name__ == "__main__":

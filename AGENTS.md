@@ -196,7 +196,9 @@ LaunchDock 的用户数据应保存在一个“启动坞”大文件夹中。
 - 整体观感可以偏现代、紧凑、稳定，避免花哨动画和过度装饰。
 - 软件启动后默认显示“关于”页面，而不是启动项目页面。
 - “关于”页面保留页面标题，并使用横向信息卡片展示软件图标、名称、当前版本号、检查新版本、GitHub 和分享下载链接按钮。
-- 更新检查通过 GitHub Releases 获取最新发布版本；如果存在新版本，应显示当前版本到最新版本的版本跨度，并展示 GitHub Release 正文作为新版本改动内容。
+- 更新检查应支持打包时写入更新源；国际版可以使用 GitHub 仓库，国内版应使用 CNB 等国内镜像仓库。
+- 更新检查优先通过配置的 Git 仓库 tag 获取最新发布版本，避免国内用户必须访问 GitHub API；如果配置了 Release API，可作为兜底信息来源。
+- 如果存在新版本，应显示当前版本到最新版本的版本跨度；通过 Git tag 检测到的新版本可提示用户打开下载页面查看发布说明。
 - 软件启动后应延迟自动检查更新；只有发现新版本时才弹窗提醒用户是否打开下载页面，用户可在本次选择不更新。
 - 手动点击“检查新版本”时，应在“关于”页面显示检查状态、无 Release、已是最新版本、检查失败或新版本内容。
 
@@ -263,6 +265,7 @@ LaunchDock 的用户数据应保存在一个“启动坞”大文件夹中。
 - 正式发布时，需要在 `development-log.md` 顶部新增 `## Version x.x.x - YYYY-MM-DD HH:mm:ss +08:00` 记录。
 - Release 正文应从上一次带 `Version` 的发布记录之后，到本次发布记录之间提炼重点，不应过长；小型格式、文案和布局调整用概括性描述即可。
 - Windows 打包使用 `scripts/build-windows.ps1`，该脚本从 `assets/icon.png` 临时派生打包所需图标，不覆盖原始图标源文件。
+- 发布国内版时，应通过 `scripts/build-windows.ps1 -UpdateChannel china -UpdateRepoUrl 国内镜像仓库地址 -ReleasePageUrl 国内下载页面地址` 将国内更新源写入打包产物，并确保 Git tag 已同步到国内镜像仓库。
 - Windows 安装包使用 `scripts/build-installer.ps1` 和 Inno Setup 6 生成，安装包文件名格式为 `LaunchDock-v版本号-windows-setup.exe`。
 - 打包产物位于 `dist/v版本号/`，不同版本的压缩包和安装包分目录保存；不得将用户本机启动坞数据或本地配置文件包含到 Release 包中。
 

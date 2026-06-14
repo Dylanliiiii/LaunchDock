@@ -1,5 +1,71 @@
 # Development Log
 
+## 2026-06-15 05:39:36 +08:00
+
+### 修改范围
+
+- GitHub 到 CNB 同步配置
+- 国内更新源地址
+
+### 涉及文件
+
+- `.github/workflows/sync-cnb.yml`
+- `.cnb.yml`
+- `scripts/build-windows.ps1`
+- `README.md`
+- `development-log.md`
+
+### 具体内容
+
+- 新增 GitHub Actions 同步配置，用于在 GitHub push 后通过 `tencentcom/git-sync` 同步仓库到 CNB。
+- 新增 CNB 配置文件，保留教程中的 CNB push 流程配置。
+- 将国内版打包脚本默认更新仓库和 README 示例改为当前 CNB 同步目标 `https://cnb.cool/DylanLIIIII/LaunchDock.git`。
+- 检查同步配置未包含明文 token，CNB 密码通过 GitHub Secrets `GIT_PASSWORD` 引用。
+
+### 验证情况
+
+- 已运行 `python -m unittest discover -s tests`，14 个测试全部通过。
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过语法检查。
+- 已检查 GitHub Actions 配置和相关项目文件，未发现明文 token、私钥或密码。
+- 本次为日常开发修改，未更新项目版本号。
+
+## 2026-06-15 05:14:56 +08:00
+
+### 修改范围
+
+- 更新源配置
+- 国内镜像版本检查
+- 打包脚本
+- 发布说明
+
+### 涉及文件
+
+- `launchdock/app.py`
+- `scripts/build-windows.ps1`
+- `scripts/build-installer.ps1`
+- `tests/test_storage.py`
+- `README.md`
+- `AGENTS.md`
+- `.agents/skills/launchdock-project/SKILL.md`
+- `development-log.md`
+
+### 具体内容
+
+- 新增随 PyInstaller 打包写入的 `update-config.json` 读取逻辑，支持不同发行渠道使用不同更新源。
+- 更新检查优先通过配置的 Git 仓库 tag 获取最新版本，适合国内版指向 CNB 等国内镜像仓库；如果配置了 Release API，再作为兜底信息来源。
+- 新增 Git tag 解析逻辑，能从 `git ls-remote --tags --refs` 输出中识别最新语义化版本。
+- 打包脚本新增 `-UpdateChannel`、`-UpdateRepoUrl`、`-ReleasePageUrl`、`-ReleaseApiUrl` 参数，并将生成的更新配置文件打进应用包。
+- 分享下载链接和发现新版本后的打开地址改为读取当前打包渠道配置的下载页面。
+- README、AGENTS 和项目专属 Skill 补充国内版打包和更新源同步说明。
+
+### 验证情况
+
+- 已运行 `python -m unittest discover -s tests`，14 个测试全部通过。
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过语法检查。
+- 已运行本地函数冒烟测试，确认 Git tag 输出可解析出 `v1.10.0` 作为最新版本。
+- 已运行 PowerShell 脚本块解析检查，确认 `scripts/build-windows.ps1` 和 `scripts/build-installer.ps1` 语法可解析。
+- 本次为日常开发修改，未更新项目版本号。
+
 ## 2026-06-15 04:24:50 +08:00
 
 ### 修改范围

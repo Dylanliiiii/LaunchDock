@@ -1,6 +1,11 @@
 param(
     [string]$Version = "1.0.0",
-    [string]$InnoSetupCompiler = ""
+    [string]$InnoSetupCompiler = "",
+    [ValidateSet("global", "china")]
+    [string]$UpdateChannel = "global",
+    [string]$UpdateRepoUrl = "",
+    [string]$ReleasePageUrl = "",
+    [string]$ReleaseApiUrl = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -15,7 +20,12 @@ if (-not (Test-Path (Join-Path $appDir "LaunchDock.exe"))) {
 
 $iconPath = Join-Path $Root "build/launchdock.ico"
 if (-not (Test-Path $iconPath)) {
-    powershell -ExecutionPolicy Bypass -File "scripts/build-windows.ps1" -Version "v$Version"
+    powershell -ExecutionPolicy Bypass -File "scripts/build-windows.ps1" `
+        -Version "v$Version" `
+        -UpdateChannel $UpdateChannel `
+        -UpdateRepoUrl $UpdateRepoUrl `
+        -ReleasePageUrl $ReleasePageUrl `
+        -ReleaseApiUrl $ReleaseApiUrl
 }
 
 if (-not $InnoSetupCompiler) {

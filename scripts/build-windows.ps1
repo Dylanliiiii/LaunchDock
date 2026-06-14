@@ -1,5 +1,10 @@
 param(
-    [string]$Version = ""
+    [string]$Version = "",
+    [ValidateSet("global", "china")]
+    [string]$UpdateChannel = "global",
+    [string]$UpdateRepoUrl = "",
+    [string]$ReleasePageUrl = "",
+    [string]$ReleaseApiUrl = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -17,6 +22,37 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 New-Item -ItemType Directory -Force -Path "build" | Out-Null
+
+if (-not $UpdateRepoUrl) {
+    if ($UpdateChannel -eq "china") {
+        $UpdateRepoUrl = "https://cnb.cool/DylanLIIIII/LaunchDock.git"
+    } else {
+        $UpdateRepoUrl = "https://github.com/Dylanliiiii/LaunchDock.git"
+    }
+}
+if (-not $ReleasePageUrl) {
+    if ($UpdateChannel -eq "china") {
+        $ReleasePageUrl = "https://cnb.cool/DylanLIIIII/LaunchDock/-/releases"
+    } else {
+        $ReleasePageUrl = "https://github.com/Dylanliiiii/LaunchDock/releases"
+    }
+}
+if (-not $ReleaseApiUrl) {
+    if ($UpdateChannel -eq "global") {
+        $ReleaseApiUrl = "https://api.github.com/repos/Dylanliiiii/LaunchDock/releases/latest"
+    } else {
+        $ReleaseApiUrl = ""
+    }
+}
+
+$updateConfigTarget = Join-Path $Root "build/update-config.json"
+$updateConfig = [ordered]@{
+    update_channel = $UpdateChannel
+    update_repo_url = $UpdateRepoUrl
+    release_page_url = $ReleasePageUrl
+    release_api_url = $ReleaseApiUrl
+}
+$updateConfig | ConvertTo-Json | Set-Content -Encoding UTF8 -Path $updateConfigTarget
 
 $iconSource = Join-Path $Root "assets/icon.png"
 $iconTarget = Join-Path $Root "build/launchdock.ico"
@@ -50,7 +86,8 @@ Add-U32 22
 $iconBytes.AddRange($pngBytes)
 [System.IO.File]::WriteAllBytes($iconTarget, $iconBytes.ToArray())
 
-$addData = "assets/icon.png;assets"
+$iconData = "assets/icon.png;assets"
+$updateConfigData = "$updateConfigTarget;launchdock"
 $arguments = @(
     "-m", "PyInstaller",
     "--noconfirm",
@@ -58,7 +95,8 @@ $arguments = @(
     "--windowed",
     "--name", "LaunchDock",
     "--icon", $iconTarget,
-    "--add-data", $addData,
+    "--add-data", $iconData,
+    "--add-data", $updateConfigData,
     "main.py"
 )
 

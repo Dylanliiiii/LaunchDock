@@ -49,10 +49,18 @@ from . import __version__
 
 ACCENT_COLOR = "#00c8d7"
 APP_ICON_PATH = Path(__file__).resolve().parent.parent / "assets" / "icon.png"
+UPDATE_CONFIG_FILE = "update-config.json"
 BACKGROUND_REMOVE_THRESHOLD = 34
 GITHUB_REPO_URL = "https://github.com/Dylanliiiii/LaunchDock"
+GITHUB_UPDATE_REPO_URL = "https://github.com/Dylanliiiii/LaunchDock.git"
 GITHUB_RELEASES_URL = f"{GITHUB_REPO_URL}/releases"
 GITHUB_LATEST_RELEASE_API = "https://api.github.com/repos/Dylanliiiii/LaunchDock/releases/latest"
+DEFAULT_UPDATE_CONFIG = {
+    "update_channel": "global",
+    "update_repo_url": GITHUB_UPDATE_REPO_URL,
+    "release_page_url": GITHUB_RELEASES_URL,
+    "release_api_url": GITHUB_LATEST_RELEASE_API,
+}
 NAVIGATION_EXPAND_MIN_WIDTH = 176
 NAVIGATION_EXPAND_MAX_WIDTH = 280
 NAVIGATION_TEXT_EXTRA_WIDTH = 118
@@ -281,8 +289,9 @@ TEXT_EXTRA = {
         "update_available_desc": "可从 v{current} 更新到 {latest}。",
         "update_changelog_title": "新版本改动内容",
         "empty_release_notes": "该 Release 没有填写发布说明。",
+        "git_update_notes": "已通过更新仓库检测到新版本。发布说明和下载内容请打开下载页面查看。",
         "update_check_failed_title": "检查更新失败",
-        "update_check_failed_desc": "无法连接 GitHub Release，请稍后再试：{error}",
+        "update_check_failed_desc": "无法连接更新源，请稍后再试：{error}",
         "open_release_prompt": "是否打开下载页面？",
         "download_link_copied": "下载链接已复制",
         "download_link_copied_desc": "已复制 GitHub Releases 下载页面链接。",
@@ -386,8 +395,9 @@ TEXT_EXTRA = {
         "update_available_desc": "可從 v{current} 更新到 {latest}。",
         "update_changelog_title": "新版本變更內容",
         "empty_release_notes": "該 Release 沒有填寫發布說明。",
+        "git_update_notes": "已透過更新倉庫偵測到新版本。發布說明和下載內容請開啟下載頁面查看。",
         "update_check_failed_title": "檢查更新失敗",
-        "update_check_failed_desc": "無法連接 GitHub Release，請稍後再試：{error}",
+        "update_check_failed_desc": "無法連接更新來源，請稍後再試：{error}",
         "open_release_prompt": "是否開啟下載頁面？",
         "download_link_copied": "下載連結已複製",
         "download_link_copied_desc": "已複製 GitHub Releases 下載頁面連結。",
@@ -491,8 +501,9 @@ TEXT_EXTRA = {
         "update_available_desc": "Update from v{current} to {latest}.",
         "update_changelog_title": "Release Notes",
         "empty_release_notes": "This Release does not include release notes.",
+        "git_update_notes": "A new version was detected from the update repository. Open the download page to view release notes and downloads.",
         "update_check_failed_title": "Update Check Failed",
-        "update_check_failed_desc": "Could not connect to GitHub Releases. Try again later: {error}",
+        "update_check_failed_desc": "Could not connect to the update source. Try again later: {error}",
         "open_release_prompt": "Open the download page?",
         "download_link_copied": "Download Link Copied",
         "download_link_copied_desc": "The GitHub Releases download page link has been copied.",
@@ -596,8 +607,9 @@ TEXT_EXTRA = {
         "update_available_desc": "v{current} から {latest} に更新できます。",
         "update_changelog_title": "新バージョンの変更内容",
         "empty_release_notes": "この Release にはリリースノートがありません。",
+        "git_update_notes": "更新リポジトリから新しいバージョンを検出しました。リリースノートとダウンロード内容はダウンロードページで確認してください。",
         "update_check_failed_title": "更新確認に失敗しました",
-        "update_check_failed_desc": "GitHub Release に接続できません。後でもう一度お試しください：{error}",
+        "update_check_failed_desc": "更新元に接続できません。後でもう一度お試しください：{error}",
         "open_release_prompt": "ダウンロードページを開きますか？",
         "download_link_copied": "ダウンロードリンクをコピーしました",
         "download_link_copied_desc": "GitHub Releases のダウンロードページリンクをコピーしました。",
@@ -701,8 +713,9 @@ TEXT_EXTRA = {
         "update_available_desc": "v{current}에서 {latest}(으)로 업데이트할 수 있습니다.",
         "update_changelog_title": "새 버전 변경 내용",
         "empty_release_notes": "이 Release에는 릴리스 노트가 없습니다.",
+        "git_update_notes": "업데이트 저장소에서 새 버전을 확인했습니다. 릴리스 노트와 다운로드 내용은 다운로드 페이지에서 확인하세요.",
         "update_check_failed_title": "업데이트 확인 실패",
-        "update_check_failed_desc": "GitHub Release에 연결할 수 없습니다. 나중에 다시 시도하세요: {error}",
+        "update_check_failed_desc": "업데이트 소스에 연결할 수 없습니다. 나중에 다시 시도하세요: {error}",
         "open_release_prompt": "다운로드 페이지를 열까요?",
         "download_link_copied": "다운로드 링크 복사됨",
         "download_link_copied_desc": "GitHub Releases 다운로드 페이지 링크를 복사했습니다.",
@@ -806,8 +819,9 @@ TEXT_EXTRA = {
         "update_available_desc": "Puedes actualizar de v{current} a {latest}.",
         "update_changelog_title": "Cambios de la nueva versión",
         "empty_release_notes": "Este Release no incluye notas de publicación.",
+        "git_update_notes": "Se detectó una nueva versión desde el repositorio de actualización. Abre la página de descarga para ver notas y descargas.",
         "update_check_failed_title": "No se pudo buscar actualización",
-        "update_check_failed_desc": "No se pudo conectar a GitHub Releases. Inténtalo más tarde: {error}",
+        "update_check_failed_desc": "No se pudo conectar a la fuente de actualización. Inténtalo más tarde: {error}",
         "open_release_prompt": "¿Abrir la página de descarga?",
         "download_link_copied": "Enlace copiado",
         "download_link_copied_desc": "Se copió el enlace de la página de descargas de GitHub Releases.",
@@ -959,8 +973,79 @@ def is_newer_version(latest: str, current: str) -> bool:
     return latest_parts + (0,) * (length - len(latest_parts)) > current_parts + (0,) * (length - len(current_parts))
 
 
-def fetch_latest_release() -> dict[str, object]:
-    request = Request(GITHUB_LATEST_RELEASE_API, headers={"Accept": "application/vnd.github+json", "User-Agent": "LaunchDock"})
+def has_version_number(version: str) -> bool:
+    return bool(version.strip().lower().lstrip("v")[:1].isdigit())
+
+
+def latest_tag_from_git_ls_remote(output: str) -> str:
+    tags: list[str] = []
+    for line in output.splitlines():
+        if "refs/tags/" not in line:
+            continue
+        tag = line.rsplit("refs/tags/", 1)[-1].strip()
+        if tag.endswith("^{}"):
+            tag = tag[:-3]
+        if has_version_number(tag):
+            tags.append(tag)
+    if not tags:
+        return ""
+    return max(tags, key=version_parts)
+
+
+def update_config_paths() -> list[Path]:
+    paths = [Path(__file__).resolve().parent / UPDATE_CONFIG_FILE]
+    bundle_root = getattr(sys, "_MEIPASS", None)
+    if bundle_root:
+        paths.insert(0, Path(bundle_root) / "launchdock" / UPDATE_CONFIG_FILE)
+    return paths
+
+
+@lru_cache(maxsize=1)
+def load_update_config() -> dict[str, str]:
+    config = dict(DEFAULT_UPDATE_CONFIG)
+    for path in update_config_paths():
+        if not path.exists():
+            continue
+        with path.open("r", encoding="utf-8") as file:
+            data = json.load(file)
+        if not isinstance(data, dict):
+            continue
+        for key in ("update_channel", "update_repo_url", "release_page_url", "release_api_url"):
+            value = data.get(key)
+            if isinstance(value, str):
+                config[key] = value.strip()
+        break
+    return config
+
+
+def release_page_url() -> str:
+    return load_update_config().get("release_page_url") or GITHUB_RELEASES_URL
+
+
+def fetch_latest_release_from_git(repo_url: str, release_url: str) -> dict[str, object]:
+    completed = subprocess.run(
+        ["git", "ls-remote", "--tags", "--refs", repo_url],
+        capture_output=True,
+        text=True,
+        timeout=8,
+        check=True,
+        creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0,
+    )
+    tag_name = latest_tag_from_git_ls_remote(completed.stdout)
+    if not tag_name:
+        return {"status": "none"}
+    return {
+        "status": "ok",
+        "tag_name": tag_name,
+        "html_url": release_url,
+        "body": "",
+        "source": "git",
+        "is_newer": is_newer_version(tag_name, __version__),
+    }
+
+
+def fetch_latest_release_from_api(api_url: str) -> dict[str, object]:
+    request = Request(api_url, headers={"Accept": "application/vnd.github+json", "User-Agent": "LaunchDock"})
     try:
         with urlopen(request, timeout=8) as response:
             data = json.loads(response.read().decode("utf-8"))
@@ -980,6 +1065,30 @@ def fetch_latest_release() -> dict[str, object]:
         "body": body,
         "is_newer": is_newer_version(tag_name, __version__) if tag_name else False,
     }
+
+
+def fetch_latest_release() -> dict[str, object]:
+    config = load_update_config()
+    release_url = config.get("release_page_url") or GITHUB_RELEASES_URL
+    errors: list[str] = []
+
+    repo_url = config.get("update_repo_url", "")
+    if repo_url:
+        try:
+            return fetch_latest_release_from_git(repo_url, release_url)
+        except (FileNotFoundError, subprocess.CalledProcessError, subprocess.TimeoutExpired, OSError) as exc:
+            errors.append(f"Git 更新源：{exc}")
+
+    api_url = config.get("release_api_url", "")
+    if api_url:
+        try:
+            return fetch_latest_release_from_api(api_url)
+        except (HTTPError, URLError, OSError, json.JSONDecodeError, ValueError) as exc:
+            errors.append(f"Release API：{exc}")
+
+    if errors:
+        raise URLError("；".join(errors))
+    return {"status": "none"}
 
 
 class UpdateSignals(QObject):
@@ -1653,7 +1762,7 @@ class LaunchDockApp(FluentWindow):
         webbrowser.open_new_tab(GITHUB_REPO_URL)
 
     def copy_download_link(self) -> None:
-        QApplication.clipboard().setText(GITHUB_RELEASES_URL)
+        QApplication.clipboard().setText(release_page_url())
         InfoBar.success(
             self.text("download_link_copied"),
             self.text("download_link_copied_desc"),
@@ -1688,8 +1797,11 @@ class LaunchDockApp(FluentWindow):
             return
 
         latest = str(result.get("tag_name") or "")
-        release_url = str(result.get("html_url") or GITHUB_RELEASES_URL)
-        body = str(result.get("body") or "").strip() or self.text("empty_release_notes")
+        release_url = str(result.get("html_url") or release_page_url())
+        if str(result.get("source") or "") == "git":
+            body = self.text("git_update_notes")
+        else:
+            body = str(result.get("body") or "").strip() or self.text("empty_release_notes")
         if bool(result.get("is_newer")):
             title = self.text("update_available_desc", current=__version__, latest=latest)
             content = f"{self.text('update_changelog_title')}\n{body}"

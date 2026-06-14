@@ -57,6 +57,14 @@ powershell -ExecutionPolicy Bypass -File scripts\build-windows.ps1 -Version v1.0
 
 打包产物会生成到 `dist/v1.0.0/LaunchDock-v1.0.0-windows.zip`。脚本会从 `assets/icon.png` 临时派生 `build/launchdock.ico`，不会覆盖或修改原始图标文件，也不会包含用户本机的启动坞数据。
 
+如果需要生成国内用户使用的版本，可以在打包时写入国内更新仓库地址。程序会优先通过 Git tag 检查新版本，不依赖 GitHub Release API：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\build-windows.ps1 -Version v1.0.0 -UpdateChannel china -UpdateRepoUrl https://cnb.cool/DylanLIIIII/LaunchDock.git -ReleasePageUrl https://cnb.cool/DylanLIIIII/LaunchDock/-/releases
+```
+
+国际版默认使用 GitHub 仓库作为更新源；国内版建议将同一份发布仓库同步到 CNB 等国内可访问平台。
+
 如需生成 Windows 安装包，需要先安装 [Inno Setup 6](https://jrsoftware.org/isinfo.php)，然后运行：
 
 ```powershell
@@ -73,6 +81,7 @@ powershell -ExecutionPolicy Bypass -File scripts\build-installer.ps1 -Version 1.
 - `development-log.md` 顶部已经添加 `## Version x.x.x - 时间` 正式发布记录。
 - 已运行基础验证：`python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py` 和 `python -m unittest discover -s tests`。
 - 已使用 `scripts\build-windows.ps1` 生成 Windows 压缩包。
+- 如发布国内版，已使用 `-UpdateChannel china` 和国内更新仓库地址重新打包，并确认对应 Git tag 已同步到国内镜像仓库。
 - 如发布安装版，已使用 `scripts\build-installer.ps1` 生成 Windows 安装包。
 
 GitHub Release 标题建议使用 `LaunchDock v1.0.0`。Release 正文应从上一个 `Version` 发布记录之后到本次发布记录之间提炼重点，保持简短；小型格式、文案和布局调整可以概括为“界面细节优化”。
