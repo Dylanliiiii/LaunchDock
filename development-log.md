@@ -1,5 +1,36 @@
 # Development Log
 
+## Version 1.1.4 - 2026-06-15 20:06:14 +08:00
+
+### 修改范围
+
+- 国内版更新检查修复
+- Windows 打包发布
+
+### 涉及文件
+
+- `launchdock/__init__.py`
+- `launchdock/app.py`
+- `tests/test_storage.py`
+- `development-log.md`
+
+### 具体内容
+
+- 将版本号更新为 `v1.1.4`，作为国内版更新检查修正版。
+- 修复普通用户电脑未安装 Git 时，国内版检查更新失败并提示 `[WinError 2] 系统找不到指定的文件` 的问题。
+- 更新检查优先通过纯 HTTP 读取远程 Git tags，不再把本机 `git.exe` 作为必需依赖。
+- 保留本机 Git 命令作为 HTTP tag 检测失败后的兜底路径。
+
+### 验证情况
+
+- 已运行 `python -m unittest tests.test_storage`。
+- 已运行 `python -m compileall launchdock`。
+- 已使用真实 CNB Git HTTP tags 地址验证可读取到最新 tag。
+- 已生成 `dist/v1.1.4/LaunchDock-v1.1.4-windows-global.zip` 和 `dist/v1.1.4/LaunchDock-v1.1.4-windows-china.zip`。
+- 已生成 `dist/v1.1.4/LaunchDock-v1.1.4-windows-global-setup.exe` 和 `dist/v1.1.4/LaunchDock-v1.1.4-windows-china-setup.exe`。
+- 已检查两个压缩包内置 `update-config.json`，均为无 BOM 的 UTF-8，且国际版指向 GitHub、国内版指向 CNB。
+- 已检查两个压缩包没有包含用户本机启动坞数据。
+
 ## 2026-06-15 20:00:39 +08:00
 
 ### 修改范围
