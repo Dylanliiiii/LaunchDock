@@ -15,12 +15,16 @@
 #define OutputDir "..\dist"
 #endif
 
+#ifndef ReleaseChannel
+#define ReleaseChannel "global"
+#endif
+
 #ifndef IconPath
 #define IconPath "..\build\launchdock.ico"
 #endif
 
 [Setup]
-AppId={45578E15-2C5C-4378-809F-C9F1665B663B}
+AppId={{45578E15-2C5C-4378-809F-C9F1665B663B}
 AppName={#MyAppName}
 AppVersion={#AppVersion}
 AppPublisher={#MyAppPublisher}
@@ -34,7 +38,7 @@ ArchitecturesInstallIn64BitMode=x64compatible
 DisableProgramGroupPage=yes
 PrivilegesRequired=lowest
 OutputDir={#OutputDir}
-OutputBaseFilename=LaunchDock-v{#AppVersion}-windows-setup
+OutputBaseFilename=LaunchDock-v{#AppVersion}-windows-{#ReleaseChannel}-setup
 SetupIconFile={#IconPath}
 SolidCompression=yes
 WizardStyle=modern

@@ -1,5 +1,52 @@
 # Development Log
 
+## Version 1.1.0 - 2026-06-15 11:40:36 +08:00
+
+### 修改范围
+
+- 国内镜像更新源
+- GitHub 到 CNB 同步
+- 启动项目交互优化
+- Windows 打包产物规范
+- 关于页更新检查状态
+
+### 涉及文件
+
+- `launchdock/__init__.py`
+- `launchdock/app.py`
+- `scripts/build-windows.ps1`
+- `scripts/build-installer.ps1`
+- `installer/launchdock.iss`
+- `.github/workflows/sync-cnb.yml`
+- `.cnb.yml`
+- `README.md`
+- `AGENTS.md`
+- `.agents/skills/launchdock-project/SKILL.md`
+- `tests/test_storage.py`
+- `development-log.md`
+
+### 具体内容
+
+- 将版本号更新为 `v1.1.0`，作为包含国内镜像更新源能力的新功能版本。
+- 支持在 PyInstaller 打包时写入不同更新源，国内版可通过 CNB 等国内镜像仓库检查 Git tag 获取最新版本。
+- 同一版本的 Windows 压缩包和安装包文件名会区分渠道，国际版使用 `global` 后缀，国内版使用 `china` 后缀，避免 Release 资产互相覆盖或混淆。
+- 安装包脚本在生成安装包前会按指定渠道重新构建程序目录，避免复用上一次打包留下的错误渠道内容。
+- 新增 GitHub Actions 到 CNB 的代码和 tag 同步配置，确保国内镜像可获得发布 tag。
+- 优化关于页更新检查状态，启动自动检查时显示“正在检查更新”，仅在确认无 Release 时显示暂无发布版本。
+- 启动项目页面默认折叠项目卡片，并支持单条启动项单独启动。
+- 打包脚本将压缩包和安装包输出到 `dist/v版本号/` 目录，便于多版本产物归档。
+- README、AGENTS 和项目专属 Skill 补充双包发布说明：Release 中同时上传国际版和国内版，并提示中国大陆无 VPN 用户建议下载国内版以获得正常自动更新。
+
+### 验证情况
+
+- 已运行 `python -m unittest discover -s tests`，14 个测试全部通过。
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过语法检查。
+- 已运行国际版 Windows 打包脚本，生成 `dist/v1.1.0/LaunchDock-v1.1.0-windows-global.zip`。
+- 已运行国内版 Windows 打包脚本，生成 `dist/v1.1.0/LaunchDock-v1.1.0-windows-china.zip`。
+- 已检查两个压缩包内置 `update-config.json`：国际版更新通道为 `global`，更新仓库为 `https://github.com/Dylanliiiii/LaunchDock.git`；国内版更新通道为 `china`，更新仓库为 `https://cnb.cool/DylanLIIIII/LaunchDock.git`。
+- 已使用 `E:\Apps_Work\Inno Setup 6\ISCC.exe` 运行国际版安装包打包脚本，生成 `dist/v1.1.0/LaunchDock-v1.1.0-windows-global-setup.exe`。
+- 已使用 `E:\Apps_Work\Inno Setup 6\ISCC.exe` 运行国内版安装包打包脚本，生成 `dist/v1.1.0/LaunchDock-v1.1.0-windows-china-setup.exe`。
+
 ## 2026-06-15 06:01:54 +08:00
 
 ### 修改范围

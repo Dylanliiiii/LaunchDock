@@ -54,6 +54,12 @@ $updateConfig = [ordered]@{
 }
 $updateConfig | ConvertTo-Json | Set-Content -Encoding UTF8 -Path $updateConfigTarget
 
+if ($UpdateChannel -eq "china") {
+    $channelLabel = "china"
+} else {
+    $channelLabel = "global"
+}
+
 $iconSource = Join-Path $Root "assets/icon.png"
 $iconTarget = Join-Path $Root "build/launchdock.ico"
 
@@ -108,10 +114,10 @@ if ($Version) {
         $versionLabel = "v$versionLabel"
     }
     $releaseDir = Join-Path $Root "dist/$versionLabel"
-    $zipName = "LaunchDock-$versionLabel-windows.zip"
+    $zipName = "LaunchDock-$versionLabel-windows-$channelLabel.zip"
 } else {
     $releaseDir = Join-Path $Root "dist"
-    $zipName = "LaunchDock-windows.zip"
+    $zipName = "LaunchDock-windows-$channelLabel.zip"
 }
 
 New-Item -ItemType Directory -Force -Path $releaseDir | Out-Null
