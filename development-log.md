@@ -1,5 +1,38 @@
 # Development Log
 
+## Version 1.1.3 - 2026-06-15 18:41:15 +08:00
+
+### 修改范围
+
+- 自动检查更新设置
+- 设置页开关显示修复
+- Windows 打包发布
+
+### 涉及文件
+
+- `launchdock/__init__.py`
+- `launchdock/app.py`
+- `tests/test_storage.py`
+- `development-log.md`
+
+### 具体内容
+
+- 将版本号更新为 `v1.1.3`，作为自动检查更新设置和开关显示问题的修订版。
+- 设置页新增“自动检查更新”开关，用户可以关闭启动后的自动检查，避免每次打开软件都弹出新版本提示。
+- 保留关于页“检查新版本”按钮的手动检查能力，关闭自动检查后仍可手动检测更新并弹窗提示。
+- 修复“自动检查更新”开关开启时滑块颜色正确但右侧文字仍显示 `Off` 的问题。
+- 自动检查更新设置会保存到本地配置，重启后继续生效。
+
+### 验证情况
+
+- 已运行 `python -m unittest tests.test_storage`。
+- 已运行 `python -m compileall launchdock`。
+- 已运行 Qt offscreen 冒烟测试，确认自动检查更新开关默认开启时显示 `On`，关闭后显示 `Off`，重新加载开启配置后仍显示 `On`。
+- 已生成 `dist/v1.1.3/LaunchDock-v1.1.3-windows-global.zip` 和 `dist/v1.1.3/LaunchDock-v1.1.3-windows-china.zip`。
+- 已生成 `dist/v1.1.3/LaunchDock-v1.1.3-windows-global-setup.exe` 和 `dist/v1.1.3/LaunchDock-v1.1.3-windows-china-setup.exe`。
+- 已检查两个压缩包内置 `update-config.json`，均为无 BOM 的 UTF-8，且国际版指向 GitHub、国内版指向 CNB。
+- 已检查两个压缩包没有包含用户本机启动坞数据。
+
 ## 2026-06-15 18:35:30 +08:00
 
 ### 修改范围
