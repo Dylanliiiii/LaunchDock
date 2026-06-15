@@ -1,0 +1,80 @@
+name: Sync CNB Release
+
+on:
+  release:
+    types: [published, edited]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "要同步到 CNB 的版本标签，例如 v1.1.2"
+        required: true
+
+jobs:
+  sync-cnb-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare release metadata
+        id: meta
+        shell: pwsh
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_TAG: ${{ inputs.tag }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ($env:EVENT_NAME -eq "workflow_dispatch") {
+            $tag = $env:INPUT_TAG
+            $release = gh release view $tag --json name,body
+            $data = $release | ConvertFrom-Json
+            $title = $data.name
+            $body = $data.body
+          } else {
+            $event = Get-Content -Path $env:GITHUB_EVENT_PATH -Raw | ConvertFrom-Json
+            $tag = $event.release.tag_name
+            $title = $event.release.name
+            $body = $event.release.body
+          }
+
+          if (-not $title) {
+            $title = "LaunchDock $tag"
+          }
+
+          New-Item -ItemType Directory -Force -Path release-assets | Out-Null
+          Set-Content -Path cnb-release-body.md -Value ($body ?? "") -Encoding utf8NoBOM
+          "tag=$tag" >> $env:GITHUB_OUTPUT
+          "title=$title" >> $env:GITHUB_OUTPUT
+
+      - name: Download GitHub Release assets
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.meta.outputs.tag }}
+        run: |
+          $expectedAssetCount = 4
+          for ($i = 1; $i -le 40; $i++) {
+            $release = gh release view $env:RELEASE_TAG --json assets | ConvertFrom-Json
+            $assetCount = @($release.assets).Count
+            if ($assetCount -ge $expectedAssetCount) {
+              break
+            }
+            Write-Output "GitHub Release 附件尚未全部就绪：$assetCount/$expectedAssetCount，等待 15 秒后重试。"
+            Start-Sleep -Seconds 15
+          }
+
+          gh release download $env:RELEASE_TAG --dir release-assets --clobber
+          Get-ChildItem -Path release-assets | Select-Object Name, Length
+
+      - name: Sync release to CNB
+        shell: pwsh
+        env:
+          CNB_TOKEN: ${{ secrets.GIT_PASSWORD }}
+          RELEASE_TAG: ${{ steps.meta.outputs.tag }}
+          RELEASE_TITLE: ${{ steps.meta.outputs.title }}
+        run: |
+          $assets = Get-ChildItem -Path release-assets -File | ForEach-Object { $_.FullName }
+          ./scripts/sync-cnb-release.ps1 `
+            -TagName $env:RELEASE_TAG `
+            -Title $env:RELEASE_TITLE `
+            -BodyFile cnb-release-body.md `
+            -Assets $assets

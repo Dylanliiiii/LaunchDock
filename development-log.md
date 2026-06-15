@@ -1,5 +1,34 @@
 # Development Log
 
+## 2026-06-15 18:09:50 +08:00
+
+### 修改范围
+
+- CNB Release 自动同步
+- GitHub Actions 发布流程
+- 发布文档
+
+### 涉及文件
+
+- `.github/workflows/sync-cnb-release.yml`
+- `scripts/sync-cnb-release.ps1`
+- `README.md`
+- `development-log.md`
+
+### 具体内容
+
+- 新增 `Sync CNB Release` GitHub Actions 工作流，在 GitHub Release 发布或编辑后自动下载 Release 附件，并尝试同步到 CNB Release。
+- 新增 `scripts/sync-cnb-release.ps1`，用于通过 CNB Release 接口创建或更新 Release，并按文件名跳过已存在附件。
+- 工作流复用已有的 `GIT_PASSWORD` secret 作为 CNB token，不在仓库中写入任何明文 token。
+- 支持手动触发 `Sync CNB Release` 工作流并输入 tag，用于发布后重试 CNB Release 同步。
+- README 补充 CNB Release 自动同步说明和 token 安全注意事项。
+
+### 验证情况
+
+- 已使用 PowerShell parser 检查 `scripts/sync-cnb-release.ps1`，语法解析通过。
+- 已使用 PyYAML 解析 `.github/workflows/sync-cnb-release.yml`，YAML 语法通过。
+- 未直接执行 CNB 附件上传流程；该流程需要在 GitHub Actions 中通过 `GIT_PASSWORD` secret 访问 CNB。
+
 ## Version 1.1.2 - 2026-06-15 16:51:53 +08:00
 
 ### 修改范围

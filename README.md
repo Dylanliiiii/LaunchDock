@@ -84,8 +84,11 @@ powershell -ExecutionPolicy Bypass -File scripts\build-installer.ps1 -Version 1.
 - 已使用 `scripts\build-windows.ps1 -UpdateChannel global` 生成国际版 Windows 压缩包。
 - 已使用 `scripts\build-windows.ps1 -UpdateChannel china` 和国内更新仓库地址生成国内版 Windows 压缩包，并确认对应 Git tag 已同步到国内镜像仓库。
 - 如发布安装版，已使用 `scripts\build-installer.ps1` 生成 Windows 安装包。
+- GitHub Actions 中已配置 `GIT_PASSWORD` secret，作为 CNB token 使用；GitHub Release 发布或编辑后，`Sync CNB Release` 工作流会尝试自动创建/更新 CNB Release 并同步附件。
 
 GitHub Release 标题建议使用 `LaunchDock v1.0.0`。Release 正文应从上一个 `Version` 发布记录之后到本次发布记录之间提炼重点，保持简短；小型格式、文案和布局调整可以概括为“界面细节优化”。
+
+如果 CNB Release 同步失败，可以在 GitHub Actions 中手动运行 `Sync CNB Release`，输入需要同步的 tag（例如 `v1.1.2`）重试。该流程只从 GitHub Secrets 读取 CNB token，不能把 token 写入仓库文件或日志。
 
 Release 资产建议同时上传国际版和国内版，并在正文中说明：
 
