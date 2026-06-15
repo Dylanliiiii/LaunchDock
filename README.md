@@ -1,126 +1,65 @@
-# LaunchDock
+<div align="center">
+  <h1 align="center">
+    <img src="assets/icon.png" width="180" alt="LaunchDock logo" />
+    <br />
+    LaunchDock
+  </h1>
 
-LaunchDock 是一个本地轻量级“启动坞”，用于管理学习、工作或个人项目中的常用网页链接，并支持一键打开某个项目所需的全部默认链接。
+  <p>
+    一个本地轻量级启动坞，用于整理学习、工作和个人项目中的常用网页链接与本地文件，并一键进入对应工作状态。
+    <br />
+    A lightweight local launch dock for opening project links and files with one click.
+  </p>
 
-## 主要功能
+  <p><i>本地保存、用户自选启动坞路径、不绑定云服务。</i></p>
+</div>
 
-- 创建、重命名、删除项目。
-- 创建项目时可以先不添加链接，之后再补充。
-- 为每个项目添加多个链接。
-- 编辑链接名称、URL 和是否默认启动。
-- 删除链接、调整链接顺序。
-- 一键打开当前项目的默认启动网页链接或本地文件路径。
-- 支持创建或选择自定义启动坞文件夹。
-- 所有项目以独立文件夹保存在启动坞中，方便备份和迁移。
-- 首次使用时不会自动创建默认路径，需要用户先创建启动坞，再创建启动项目。
+<div align="center">
 
-## 界面风格
+![platform](https://img.shields.io/badge/platform-Windows-blue)
+[![GitHub release](https://img.shields.io/github/v/release/Dylanliiiii/LaunchDock)](https://github.com/Dylanliiiii/LaunchDock/releases)
+[![downloads](https://img.shields.io/github/downloads/Dylanliiiii/LaunchDock/total)](https://github.com/Dylanliiiii/LaunchDock/releases)
+![python](https://img.shields.io/badge/Python-3.x-3776AB)
+![UI](https://img.shields.io/badge/UI-PySide6%20%2B%20QFluentWidgets-00c8d7)
 
-当前界面基于 PySide6 + QFluentWidgets，采用深色 Windows 11 / WinUI 风格：
+</div>
 
-- 左侧为垂直导航栏，包含图标和文字。
-- 右侧为设置页式主区域。
-- 标题栏显示为 `LaunchDock`。
-- 启动项目以卡片形式排列。
-- 项目卡片内展示启动项，每个启动项右侧有启用开关、编辑图标和删除图标。
-- 项目卡片支持折叠和展开启动项。
-- 顶部提供“管理项目”入口，可勾选多个启动项目，并支持全选、取消全选、反选和批量删除。
-- 每个项目卡片提供“管理启动项”入口，可勾选该项目内多个启动项，并支持全选、取消全选、反选和批量删除。
-- 右上角提供“新建”按钮。
-- 青色用于强调色，例如主要按钮和启用状态。
+### 中文说明 | [English Readme](README_en.md) | [日本語 Readme](README_ja.md)
 
-## 安装依赖
+---
 
-```bash
-python -m pip install -r requirements.txt
-```
+## 快速开始
 
-## 运行方式
+1. 打开 [GitHub Releases](https://github.com/Dylanliiiii/LaunchDock/releases) 下载最新版。
+2. 中国大陆无 VPN 用户建议下载 `LaunchDock-v版本号-windows-china-setup.exe`，更新源使用国内镜像。
+3. 可正常访问 GitHub 的用户可以下载 `LaunchDock-v版本号-windows-global-setup.exe`。
+4. 安装并启动后，首次使用需要创建或选择一个本地“启动坞”文件夹。
 
-```bash
-python main.py
-```
+压缩包版本也会同时提供，文件名分别为：
 
-## Windows 打包
+- `LaunchDock-v版本号-windows-global.zip`
+- `LaunchDock-v版本号-windows-china.zip`
 
-首次打包前需要安装 PyInstaller：
+## LaunchDock 可以做什么
 
-```bash
-python -m pip install pyinstaller
-```
+- 创建多个学习、工作或个人项目。
+- 每个项目保存多个网页链接、本地文件或文件夹路径。
+- 为链接设置是否参与默认启动。
+- 一键打开某个项目中已启用的全部启动项。
+- 支持项目和启动项的添加、编辑、删除与批量管理。
+- 支持自定义本地启动坞路径，数据保存在用户自己的文件夹中。
+- 支持国际版 GitHub 更新源和国内版 CNB 更新源。
 
-打包当前版本的国际版：
+## 下载渠道
 
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts\build-windows.ps1 -Version v1.1.0 -UpdateChannel global
-```
+- GitHub Release：[https://github.com/Dylanliiiii/LaunchDock/releases](https://github.com/Dylanliiiii/LaunchDock/releases)
+- CNB Release：[https://cnb.cool/DylanLIIIII/LaunchDock/-/releases](https://cnb.cool/DylanLIIIII/LaunchDock/-/releases)
 
-打包产物会生成到 `dist/v1.1.0/LaunchDock-v1.1.0-windows-global.zip`。脚本会从 `assets/icon.png` 临时派生 `build/launchdock.ico`，不会覆盖或修改原始图标文件，也不会包含用户本机的启动坞数据。
+国际版适合可以稳定访问 GitHub 的用户；国内版适合中国大陆无 VPN 用户，便于正常检查更新。
 
-如果需要生成国内用户使用的版本，可以在打包时写入国内更新仓库地址。程序会优先通过 Git tag 检查新版本，不依赖 GitHub Release API：
+## 本地数据结构
 
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts\build-windows.ps1 -Version v1.1.0 -UpdateChannel china -UpdateRepoUrl https://cnb.cool/DylanLIIIII/LaunchDock.git -ReleasePageUrl https://cnb.cool/DylanLIIIII/LaunchDock/-/releases
-```
-
-国内版打包产物会生成到 `dist/v1.1.0/LaunchDock-v1.1.0-windows-china.zip`。国际版默认使用 GitHub 仓库作为更新源；国内版建议将同一份发布仓库同步到 CNB 等国内可访问平台。
-
-如需生成 Windows 安装包，需要先安装 [Inno Setup 6](https://jrsoftware.org/isinfo.php)，然后运行：
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts\build-installer.ps1 -Version 1.1.0 -UpdateChannel global
-powershell -ExecutionPolicy Bypass -File scripts\build-installer.ps1 -Version 1.1.0 -UpdateChannel china -UpdateRepoUrl https://cnb.cool/DylanLIIIII/LaunchDock.git -ReleasePageUrl https://cnb.cool/DylanLIIIII/LaunchDock/-/releases
-```
-
-安装包适合在 GitHub Release 中提供给普通用户直接安装，可以创建开始菜单、桌面快捷方式和卸载入口。安装包文件名同样会区分渠道，例如 `LaunchDock-v1.1.0-windows-global-setup.exe` 和 `LaunchDock-v1.1.0-windows-china-setup.exe`。
-
-## 发布 Release
-
-发布前先确认：
-
-- `launchdock/__init__.py` 中的 `__version__` 已更新。
-- `development-log.md` 顶部已经添加 `## Version x.x.x - 时间` 正式发布记录。
-- 已运行基础验证：`python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py` 和 `python -m unittest discover -s tests`。
-- 已使用 `scripts\build-windows.ps1 -UpdateChannel global` 生成国际版 Windows 压缩包。
-- 已使用 `scripts\build-windows.ps1 -UpdateChannel china` 和国内更新仓库地址生成国内版 Windows 压缩包，并确认对应 Git tag 已同步到国内镜像仓库。
-- 如发布安装版，已使用 `scripts\build-installer.ps1` 生成 Windows 安装包。
-- GitHub Actions 中已配置 `GIT_PASSWORD` secret，作为 CNB token 使用；GitHub Release 发布或编辑后，`Sync CNB Release` 工作流会尝试自动创建/更新 CNB Release 并同步附件。
-
-GitHub Release 标题建议使用 `LaunchDock v1.0.0`。Release 正文应从上一个 `Version` 发布记录之后到本次发布记录之间提炼重点，保持简短；小型格式、文案和布局调整可以概括为“界面细节优化”。
-
-如果 CNB Release 同步失败，可以在 GitHub Actions 中手动运行 `Sync CNB Release`，输入需要同步的 tag（例如 `v1.1.2`）重试。该流程只从 GitHub Secrets 读取 CNB token，不能把 token 写入仓库文件或日志。
-
-Release 资产建议同时上传国际版和国内版，并在正文中说明：
-
-```text
-下载说明：
-
-- 国际版：`LaunchDock-v版本号-windows-global.zip`，更新源为 GitHub，适合能稳定访问 GitHub 的用户。
-- 国内版：`LaunchDock-v版本号-windows-china.zip`，更新源为 CNB 国内镜像，适合中国大陆网络环境。
-
-如果你在国内且没有 VPN，建议下载国内版，以便后续能够正常自动检查更新。
-```
-
-`v1.0.0` 首次发布正文建议：
-
-```text
-首次正式发布 LaunchDock。
-
-- 支持创建启动坞，并在本地保存多个启动项目。
-- 支持为项目添加、编辑、删除启动项，并一键打开启用的网页链接或本地文件。
-- 支持项目和启动项管理模式，可批量选择和删除。
-- 提供深色 Fluent 风格界面、关于页、版本检查入口和基础多语言界面。
-```
-
-## 应用图标
-
-应用图标文件为 `assets/icon.png`。当前运行时会将它设置为窗口图标；后续打包为桌面软件时，也应继续使用该文件作为软件图标源。图标源推荐使用带透明通道的 PNG；如果源图缺少透明通道，程序运行时会尝试基于角落背景色临时剔除纯色背景，但不会修改原始图标文件。
-
-## 启动坞结构
-
-首次运行时，程序不会自动创建默认路径。用户需要先在窗口中点击“创建 / 选择启动坞”，选择一个本地文件夹作为启动坞。启动坞用于保存启动项目的存储位置；没有启动坞时，不能创建启动项目。
-
-启动坞结构示例：
+LaunchDock 不把用户项目数据写进程序目录。用户需要选择一个本地文件夹作为启动坞根目录，推荐结构如下：
 
 ```text
 用户选择的启动坞文件夹/
@@ -128,12 +67,73 @@ Release 资产建议同时上传国际版和国内版，并在正文中说明：
   projects/
     pytorch/
       project.json
+    linear-algebra/
+      project.json
 ```
 
-程序自身配置保存在用户主目录的 `.launchdock/config.json` 中，用于记住启动坞路径。开源仓库内不会写死任何开发者本机路径。
+- `launchdock.json` 保存全局配置，例如项目排序、最近打开项目和窗口设置。
+- `projects/` 保存所有启动项目。
+- 每个项目一个独立文件夹。
+- 每个项目的链接数据保存在自己的 `project.json` 中。
+
+## 从源码运行
+
+建议使用 Python 虚拟环境：
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+python -m launchdock.app
+```
+
+## Windows 打包
+
+项目提供 Windows 打包脚本：
+
+```powershell
+.\scripts\build-windows.ps1
+```
+
+打包脚本会从 `assets/icon.png` 临时派生打包所需图标，不会覆盖原始图标源文件。
+
+国内版打包示例：
+
+```powershell
+.\scripts\build-windows.ps1 `
+  -UpdateChannel china `
+  -UpdateRepoUrl "国内镜像仓库地址" `
+  -ReleasePageUrl "国内下载页面地址"
+```
+
+安装包使用 Inno Setup 6：
+
+```powershell
+.\scripts\build-installer.ps1
+```
+
+正式发布产物位于 `dist/v版本号/`，不同版本会分目录保存。
+
+## 发布说明
+
+正式发布时需要同时提供：
+
+- 国际版压缩包：`LaunchDock-v版本号-windows-global.zip`
+- 国内版压缩包：`LaunchDock-v版本号-windows-china.zip`
+- 国际版安装包：`LaunchDock-v版本号-windows-global-setup.exe`
+- 国内版安装包：`LaunchDock-v版本号-windows-china-setup.exe`
+
+Release 正文应说明国际版更新源为 GitHub，国内版更新源为 CNB 等国内镜像；中国大陆无 VPN 用户建议下载国内版。
 
 ## 开发说明
 
-- 项目协作规则见 `AGENTS.md`。
-- 项目专属 Skill 见 `.agents/skills/launchdock-project/SKILL.md`。
-- 每次生成或修改代码后，需要同步更新 `development-log.md`。
+- UI 层集中在 `launchdock/app.py`。
+- 业务模型位于 `launchdock/models.py`。
+- 本地存储逻辑位于 `launchdock/storage.py`。
+- 项目协作约定见 `AGENTS.md`。
+- 每次修改代码或文档后，需要同步更新 `development-log.md`。
+
+## License
+
+本项目使用 AGPL-3.0 license。
