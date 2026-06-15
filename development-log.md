@@ -1,5 +1,36 @@
 # Development Log
 
+## Version 1.1.2 - 2026-06-15 16:51:53 +08:00
+
+### 修改范围
+
+- GitHub 到 CNB 同步流程
+- CNB 无效流水线配置
+- 修正版打包发布
+
+### 涉及文件
+
+- `launchdock/__init__.py`
+- `.github/workflows/sync-cnb.yml`
+- `.cnb.yml`
+- `development-log.md`
+
+### 具体内容
+
+- 将版本号更新为 `v1.1.2`，作为 CNB 同步流程修正版。
+- 修复 GitHub Actions 中 CNB tag 同步失败的问题：不再使用 `git push --tags` 重推全部标签，改为先读取 CNB 已存在的 tag，只推送 CNB 缺失的 tag。
+- 避免 CNB 已存在的 tag 与 GitHub 本地 tag 对象不一致时触发 `already exists` 拒绝，导致整个同步 workflow 标红。
+- 删除 `.cnb.yml`，避免 CNB 仓库收到同步后尝试执行 Docker 构建；LaunchDock 是 PySide6 桌面应用，不需要 CNB Docker pipeline。
+- 保持国际版和国内版双渠道发布方式，继续区分 `global` 和 `china` 打包产物。
+
+### 验证情况
+
+- 已运行 `python -m unittest discover -s tests`，15 个测试全部通过。
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过语法检查。
+- 已生成 `dist/v1.1.2/LaunchDock-v1.1.2-windows-global.zip` 和 `dist/v1.1.2/LaunchDock-v1.1.2-windows-china.zip`。
+- 已生成 `dist/v1.1.2/LaunchDock-v1.1.2-windows-global-setup.exe` 和 `dist/v1.1.2/LaunchDock-v1.1.2-windows-china-setup.exe`。
+- 已检查两个压缩包内置 `update-config.json`，均为无 BOM 的 UTF-8，且国际版指向 GitHub、国内版指向 CNB。
+
 ## 2026-06-15 16:42:52 +08:00
 
 ### 修改范围
