@@ -26,5 +26,18 @@ jobs:
           CNB_PASSWORD: ${{ secrets.GIT_PASSWORD }}
         run: |
           AUTH_HEADER=$(printf "cnb:%s" "$CNB_PASSWORD" | base64 -w 0)
-          git -c "http.https://cnb.cool/.extraheader=Authorization: Basic $AUTH_HEADER" \
-            push https://cnb.cool/DylanLIIIII/LaunchDock.git --tags
+          git ls-remote --tags --refs https://cnb.cool/DylanLIIIII/LaunchDock.git \
+            | awk '{print $2}' \
+            | sed 's#refs/tags/##' > /tmp/cnb-tags.txt
+
+          while read -r tag; do
+            if [ -z "$tag" ]; then
+              continue
+            fi
+            if grep -Fxq "$tag" /tmp/cnb-tags.txt; then
+              echo "Tag $tag already exists on CNB, skipping."
+              continue
+            fi
+            git -c "http.https://cnb.cool/.extraheader=Authorization: Basic $AUTH_HEADER" \
+              push https://cnb.cool/DylanLIIIII/LaunchDock.git "refs/tags/$tag:refs/tags/$tag"
+          done < <(git tag --list)

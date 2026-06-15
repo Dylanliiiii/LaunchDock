@@ -1,5 +1,29 @@
 # Development Log
 
+## 2026-06-15 16:42:52 +08:00
+
+### 修改范围
+
+- GitHub 到 CNB 同步流程
+- CNB 无效流水线配置
+
+### 涉及文件
+
+- `.github/workflows/sync-cnb.yml`
+- `.cnb.yml`
+- `development-log.md`
+
+### 具体内容
+
+- 修复 GitHub Actions 中 CNB tag 同步失败的问题：不再使用 `git push --tags` 重推全部标签，改为先读取 CNB 已存在的 tag，只推送 CNB 缺失的 tag。
+- 避免 CNB 已存在的 tag 与 GitHub 本地 tag 对象不一致时触发 `already exists` 拒绝，导致整个同步 workflow 标红。
+- 删除 `.cnb.yml`，避免 CNB 仓库收到同步后尝试执行 Docker 构建；LaunchDock 是 PySide6 桌面应用，不需要 CNB Docker pipeline。
+
+### 验证情况
+
+- 已检查失败的 GitHub Actions 日志，确认失败点为 `git push --tags` 推送已存在的 `v1.1.0` tag 被 CNB 拒绝。
+- 本次为 CI 配置和镜像仓库配置修复，未运行应用测试。
+
 ## Version 1.1.1 - 2026-06-15 12:48:54 +08:00
 
 ### 修改范围
