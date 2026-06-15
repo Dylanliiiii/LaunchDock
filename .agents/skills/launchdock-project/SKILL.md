@@ -13,7 +13,9 @@ description: 仅用于 LaunchDock 项目的专属技能。用于更新或实现�
 - 仓库内路径使用相对路径，不写死任何开发者本机绝对路径。
 - 用户要求实现功能时，先读取根目录 `AGENTS.md`，再根据当前代码结构做最小必要修改。
 - 每次生成或修改代码时，同步更新根目录 `development-log.md`，并记录日期、时间、修改范围、涉及文件、具体内容和验证情况。
+- 普通代码或文档更新完成后，按 `.agents/skills/launchdock-release/SKILL.md` 的普通更新流程提交并 push 到 GitHub。
 - 版本号（例如 `0.2.0`）仅在正式完成一轮开发、重新打包或上线更新时才记录到开发日志，日常开发和测试不改变版本号。
+- 正式发布、打包、创建 Release 或同步 CNB 时，使用 `.agents/skills/launchdock-release/SKILL.md`，不要只凭对话记忆执行发布流程。
 - 每次新增、修改、删除或移动 Skill 时，同步更新根目录 `AGENTS.md` 中的项目专属 Skill 说明。
 - 始终优先保护用户本地数据，避免无确认删除或覆盖。
 

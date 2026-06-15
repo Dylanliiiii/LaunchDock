@@ -1,5 +1,35 @@
 # Development Log
 
+## 2026-06-15 21:12:14 +08:00
+
+### 修改范围
+
+- 项目专属发布 Skill
+- 普通更新与 Release 流程约定
+
+### 涉及文件
+
+- `.agents/skills/launchdock-release/SKILL.md`
+- `.agents/skills/launchdock-release/agents/openai.yaml`
+- `.agents/skills/launchdock-project/SKILL.md`
+- `AGENTS.md`
+- `development-log.md`
+
+### 具体内容
+
+- 新增 `launchdock-release` 项目专属 Skill，记录普通 push、正式 release、PyInstaller 打包、Inno Setup 安装包、GitHub/CNB 双平台发布和失败兜底流程。
+- 明确日常代码或文档修改完成后直接提交并 push 到 GitHub，不自动创建 Release。
+- 明确只有用户要求正式发版时才执行完整 Release；如果“更新”意图不清，必须先向开发者确认。
+- 记录自动上传或同步附件最多尝试两次，失败后停止并提供手动双平台发布材料。
+- 补充 GitHub、CNB、更新源、打包脚本和 Inno Setup 查找规则等发布关键信息。
+- 记录当前机器可用的 Inno Setup Compiler 路径为 `E:\Apps_Work\Inno Setup 6\ISCC.exe`，便于后续安装包打包时显式传入。
+
+### 验证情况
+
+- 已使用 Python UTF-8 模式运行 Skill 基础校验。
+- 已运行 `git diff --check` 检查文档变更没有空白错误。
+- 本次为流程文档和 Skill 更新，未运行应用单元测试。
+
 ## 2026-06-15 20:44:51 +08:00
 
 ### 修改范围

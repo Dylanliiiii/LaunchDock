@@ -1,0 +1,4 @@
+interface:
+  display_name: "LaunchDock 发布助手"
+  short_description: "维护 LaunchDock 的普通 push、版本发布、双平台 Release 和打包流程。"
+  default_prompt: "根据 LaunchDock 的发布约定，判断本次是普通 GitHub 更新还是正式 Release，并执行对应的提交、打包、发布或手动发布材料整理流程。"

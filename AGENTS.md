@@ -35,20 +35,30 @@ LaunchDock 是一个本地轻量级“启动坞”。它用于管理学习、工
 
 ## 项目专属 Skill
 
-本项目包含一个只服务于 LaunchDock 的项目专属 Skill：
+本项目包含以下只服务于 LaunchDock 的项目专属 Skill：
 
-`.agents/skills/launchdock-project/SKILL.md`
+- `.agents/skills/launchdock-project/SKILL.md`
+- `.agents/skills/launchdock-release/SKILL.md`
 
-该路径必须保持为仓库相对路径，不能写成本机绝对路径。项目未来会上传到 GitHub 开源，其他用户下载仓库后应能在自己的系统中通过相对路径找到该 Skill。
+这些路径必须保持为仓库相对路径，不能写成本机绝对路径。项目未来会上传到 GitHub 开源，其他用户下载仓库后应能在自己的系统中通过相对路径找到这些 Skill。
 
-使用场景：
+`launchdock-project` 使用场景：
 
 - 更新 LaunchDock 的需求、产品设计或开发约定。
 - 设计项目模块、链接管理、启动坞、本地存储结构。
 - 实现或调整创建项目、删除项目、编辑链接、一键启动等重复性工作。
 - 维护本项目的中文文档和中文界面文案。
 
-这个 Skill 不应作为全局通用技能使用，也不应服务其他项目。
+`launchdock-release` 使用场景：
+
+- 处理普通代码或文档更新后的提交与 GitHub push。
+- 判断用户是只想更新 GitHub，还是要正式发布新的 Release。
+- 执行 LaunchDock 的 PyInstaller / Inno Setup 打包流程。
+- 创建 GitHub Release，并同步或指导同步 CNB Release。
+- 记录 GitHub、CNB、更新源、打包脚本和 Inno Setup 等发布相关信息。
+- 当自动上传连续两次失败或卡住时，停止自动尝试，并给出手动双平台发布所需的版本号、标题、正文和附件清单。
+
+这些 Skill 不应作为全局通用技能使用，也不应服务其他项目。
 
 后续如果新增、修改、删除或移动任何 Skill，必须同步更新本文件中的项目专属 Skill 说明，确保 `AGENTS.md` 始终反映当前仓库实际可用的 Skill 状态。
 
@@ -260,6 +270,9 @@ LaunchDock 的用户数据应保存在一个“启动坞”大文件夹中。
 ## 发布流程
 
 - GitHub 仓库地址为 `https://github.com/Dylanliiiii/LaunchDock`。
+- 日常代码或文档修改完成并验证后，应直接提交并 push 到 GitHub；不应自动创建 Release。
+- 只有用户明确要求发布新版本、打包 release、发版或上传安装包时，才执行完整 Release 流程。
+- 如果用户只说“更新一下”“更新版本”“更新 GitHub”等模糊表达，且无法判断是普通 push 还是正式 Release，必须先向用户确认。
 - 正式发布前，先按常见语义化版本规则确认版本号：主版本号用于大改或不兼容变更，次版本号用于新功能，修订号用于 bug 修复。例如当前版本为 `1.0.0` 时，大改发布为 `2.0.0`，新功能发布为 `1.1.0`，bug 修复发布为 `1.0.1`。
 - 正式发布时，需要同步更新 `launchdock/__init__.py` 中的 `__version__`。
 - 正式发布时，需要在 `development-log.md` 顶部新增 `## Version x.x.x - YYYY-MM-DD HH:mm:ss +08:00` 记录。
@@ -268,6 +281,7 @@ LaunchDock 的用户数据应保存在一个“启动坞”大文件夹中。
 - 发布国内版时，应通过 `scripts/build-windows.ps1 -UpdateChannel china -UpdateRepoUrl 国内镜像仓库地址 -ReleasePageUrl 国内下载页面地址` 将国内更新源写入打包产物，并确保 Git tag 已同步到国内镜像仓库。
 - 同一版本应同时生成国际版和国内版打包文件，文件名需要区分渠道：国际版使用 `LaunchDock-v版本号-windows-global.zip`，国内版使用 `LaunchDock-v版本号-windows-china.zip`。
 - Release 中应同时上传国际版和国内版，并在正文说明：国际版更新源为 GitHub，国内版更新源为 CNB 等国内镜像；中国大陆无 VPN 用户建议下载国内版，以便获得正常自动更新。
+- 自动上传或同步 Release 附件时，同一位置最多尝试两次；如果仍卡住或失败，应停止自动尝试，并告知开发者手动在 GitHub 和 CNB 发布，提供可复制的版本号、Release title、正文和附件路径。
 - Windows 安装包使用 `scripts/build-installer.ps1` 和 Inno Setup 6 生成，安装包文件名格式为 `LaunchDock-v版本号-windows-渠道-setup.exe`。
 - 打包产物位于 `dist/v版本号/`，不同版本的压缩包和安装包分目录保存；不得将用户本机启动坞数据或本地配置文件包含到 Release 包中。
 
