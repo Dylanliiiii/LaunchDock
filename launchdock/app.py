@@ -1031,6 +1031,21 @@ def latest_tag_from_git_ls_remote(output: str) -> str:
     return max(tags, key=version_parts)
 
 
+def latest_tag_from_git_info_refs(content: str) -> str:
+    tags: list[str] = []
+    for item in content.replace("\x00", "\n").splitlines():
+        if "refs/tags/" not in item:
+            continue
+        tag = item.rsplit("refs/tags/", 1)[-1].strip().split()[0]
+        if tag.endswith("^{}"):
+            tag = tag[:-3]
+        if has_version_number(tag):
+            tags.append(tag)
+    if not tags:
+        return ""
+    return max(tags, key=version_parts)
+
+
 def update_config_paths() -> list[Path]:
     paths = [Path(__file__).resolve().parent / UPDATE_CONFIG_FILE]
     bundle_root = getattr(sys, "_MEIPASS", None)
@@ -1059,6 +1074,32 @@ def load_update_config() -> dict[str, str]:
 
 def release_page_url() -> str:
     return load_update_config().get("release_page_url") or GITHUB_RELEASES_URL
+
+
+def git_info_refs_url(repo_url: str) -> str:
+    url = repo_url.strip()
+    if not url:
+        return ""
+    if url.endswith(".git"):
+        url = url[:-4]
+    return f"{url.rstrip('/')}/info/refs?service=git-upload-pack"
+
+
+def fetch_latest_release_from_git_http(repo_url: str, release_url: str) -> dict[str, object]:
+    request = Request(git_info_refs_url(repo_url), headers={"User-Agent": "LaunchDock"})
+    with urlopen(request, timeout=8) as response:
+        content = response.read().decode("utf-8", errors="replace")
+    tag_name = latest_tag_from_git_info_refs(content)
+    if not tag_name:
+        return {"status": "none"}
+    return {
+        "status": "ok",
+        "tag_name": tag_name,
+        "html_url": release_url,
+        "body": "",
+        "source": "git",
+        "is_newer": is_newer_version(tag_name, __version__),
+    }
 
 
 def fetch_latest_release_from_git(repo_url: str, release_url: str) -> dict[str, object]:
@@ -1113,6 +1154,10 @@ def fetch_latest_release() -> dict[str, object]:
 
     repo_url = config.get("update_repo_url", "")
     if repo_url:
+        try:
+            return fetch_latest_release_from_git_http(repo_url, release_url)
+        except (HTTPError, URLError, OSError, ValueError) as exc:
+            errors.append(f"Git HTTP 更新源：{exc}")
         try:
             return fetch_latest_release_from_git(repo_url, release_url)
         except (FileNotFoundError, subprocess.CalledProcessError, subprocess.TimeoutExpired, OSError) as exc:

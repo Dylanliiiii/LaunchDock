@@ -5,8 +5,11 @@ from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
 from launchdock.app import (
+    fetch_latest_release_from_git_http,
+    git_info_refs_url,
     is_newer_version,
     is_valid_target,
+    latest_tag_from_git_info_refs,
     latest_tag_from_git_ls_remote,
     load_update_config,
     load_user_settings,
@@ -175,6 +178,43 @@ class DockStorageTest(unittest.TestCase):
         )
 
         self.assertEqual(latest_tag_from_git_ls_remote(output), "v1.10.0")
+
+    def test_latest_tag_from_git_info_refs(self) -> None:
+        content = "\n".join(
+            [
+                "001e# service=git-upload-pack",
+                "abc refs/tags/v1.0.0",
+                "def refs/tags/v1.10.0",
+                "ghi refs/tags/v1.2.0^{}",
+                "jkl refs/tags/not-a-version",
+            ]
+        )
+
+        self.assertEqual(latest_tag_from_git_info_refs(content), "v1.10.0")
+
+    def test_git_info_refs_url_removes_git_suffix(self) -> None:
+        self.assertEqual(
+            git_info_refs_url("https://cnb.cool/DylanLIIIII/LaunchDock.git"),
+            "https://cnb.cool/DylanLIIIII/LaunchDock/info/refs?service=git-upload-pack",
+        )
+
+    def test_fetch_latest_release_from_git_http(self) -> None:
+        class FakeResponse:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, exc_type, exc, traceback):
+                return False
+
+            def read(self) -> bytes:
+                return b"abc refs/tags/v1.0.0\ndef refs/tags/v9.9.9\n"
+
+        with patch("launchdock.app.urlopen", return_value=FakeResponse()):
+            result = fetch_latest_release_from_git_http("https://example.com/repo.git", "https://example.com/releases")
+
+        self.assertEqual(result["tag_name"], "v9.9.9")
+        self.assertEqual(result["source"], "git")
+        self.assertTrue(result["is_newer"])
 
     def test_load_update_config_accepts_utf8_bom(self) -> None:
         with TemporaryDirectory() as temp_dir:

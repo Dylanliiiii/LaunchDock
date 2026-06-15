@@ -1,5 +1,33 @@
 # Development Log
 
+## 2026-06-15 20:00:39 +08:00
+
+### 修改范围
+
+- 国内版更新检查
+- Git 依赖兜底
+- 更新检查测试
+
+### 涉及文件
+
+- `launchdock/app.py`
+- `tests/test_storage.py`
+- `development-log.md`
+
+### 具体内容
+
+- 修复国内版在普通用户电脑未安装 Git 时检查更新失败的问题。
+- 更新检查改为优先通过纯 HTTP 读取远程 Git tags，不再把本机 `git.exe` 作为必需依赖。
+- 保留本机 Git 命令作为 HTTP tag 检测失败后的兜底路径。
+- 新增测试覆盖 Git HTTP tags 内容解析、`.git` 后缀 URL 转换和 HTTP 更新检查结果解析。
+
+### 验证情况
+
+- 已运行 `python -m unittest tests.test_storage`。
+- 已运行 `python -m compileall launchdock`。
+- 已使用真实 CNB Git HTTP tags 地址验证可读取到最新 tag。
+- 本次为日常修复，未更新项目版本号。
+
 ## Version 1.1.3 - 2026-06-15 18:41:15 +08:00
 
 ### 修改范围
