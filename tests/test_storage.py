@@ -8,6 +8,7 @@ from launchdock.app import (
     is_newer_version,
     is_valid_target,
     latest_tag_from_git_ls_remote,
+    load_update_config,
     load_user_settings,
     normalized_target_text,
     save_user_setting,
@@ -154,6 +155,16 @@ class DockStorageTest(unittest.TestCase):
         )
 
         self.assertEqual(latest_tag_from_git_ls_remote(output), "v1.10.0")
+
+    def test_load_update_config_accepts_utf8_bom(self) -> None:
+        with TemporaryDirectory() as temp_dir:
+            config_file = Path(temp_dir) / "update-config.json"
+            config_file.write_text('{"update_channel": "china"}', encoding="utf-8-sig")
+
+            load_update_config.cache_clear()
+            with patch("launchdock.app.update_config_paths", return_value=[config_file]):
+                self.assertEqual(load_update_config()["update_channel"], "china")
+            load_update_config.cache_clear()
 
 
 if __name__ == "__main__":

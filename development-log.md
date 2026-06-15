@@ -1,5 +1,65 @@
 # Development Log
 
+## Version 1.1.1 - 2026-06-15 12:48:54 +08:00
+
+### 修改范围
+
+- 更新检查修复
+- Windows 安装包安装路径
+- 修正版打包发布
+
+### 涉及文件
+
+- `launchdock/__init__.py`
+- `launchdock/app.py`
+- `scripts/build-windows.ps1`
+- `installer/launchdock.iss`
+- `tests/test_storage.py`
+- `development-log.md`
+
+### 具体内容
+
+- 将版本号更新为 `v1.1.1`，作为 `v1.1.0` 发布后的修正版。
+- 修复 `update-config.json` 带 UTF-8 BOM 时无法解析，导致关于页显示“检查更新失败”的问题。
+- 打包脚本写入更新配置时改用无 BOM 的 UTF-8，避免新包继续生成带 BOM 配置。
+- 安装包配置强制显示安装路径选择页，允许用户在安装时自定义安装目录。
+- 保持国际版和国内版双渠道发布方式，继续区分 `global` 和 `china` 打包产物。
+
+### 验证情况
+
+- 已运行 `python -m unittest discover -s tests`，15 个测试全部通过。
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过语法检查。
+- 已生成 `dist/v1.1.1/LaunchDock-v1.1.1-windows-global.zip` 和 `dist/v1.1.1/LaunchDock-v1.1.1-windows-china.zip`。
+- 已生成 `dist/v1.1.1/LaunchDock-v1.1.1-windows-global-setup.exe` 和 `dist/v1.1.1/LaunchDock-v1.1.1-windows-china-setup.exe`。
+- 已检查两个压缩包内置 `update-config.json`，均为无 BOM 的 UTF-8，且国际版与国内版更新源配置正确。
+
+## 2026-06-15 12:34:04 +08:00
+
+### 修改范围
+
+- 更新配置编码兼容
+- 打包配置写入方式
+- 更新检查测试
+
+### 涉及文件
+
+- `launchdock/app.py`
+- `scripts/build-windows.ps1`
+- `tests/test_storage.py`
+- `development-log.md`
+
+### 具体内容
+
+- 修复 `update-config.json` 带 UTF-8 BOM 时无法解析，导致关于页显示“检查更新失败”的问题。
+- 读取更新配置和 Release API 响应时改用 `utf-8-sig`，兼容带 BOM 和不带 BOM 的 UTF-8 内容。
+- 打包脚本写入 `build/update-config.json` 时改为无 BOM 的 UTF-8，避免后续新包继续生成带 BOM 配置。
+- 新增测试覆盖带 BOM 的更新配置读取场景。
+
+### 验证情况
+
+- 已运行 `python -m unittest discover -s tests`，15 个测试全部通过。
+- 已运行 `python -m py_compile main.py launchdock\__init__.py launchdock\models.py launchdock\storage.py launchdock\app.py tests\test_storage.py`，通过语法检查。
+
 ## Version 1.1.0 - 2026-06-15 11:40:36 +08:00
 
 ### 修改范围

@@ -1006,7 +1006,7 @@ def load_update_config() -> dict[str, str]:
     for path in update_config_paths():
         if not path.exists():
             continue
-        with path.open("r", encoding="utf-8") as file:
+        with path.open("r", encoding="utf-8-sig") as file:
             data = json.load(file)
         if not isinstance(data, dict):
             continue
@@ -1048,7 +1048,7 @@ def fetch_latest_release_from_api(api_url: str) -> dict[str, object]:
     request = Request(api_url, headers={"Accept": "application/vnd.github+json", "User-Agent": "LaunchDock"})
     try:
         with urlopen(request, timeout=8) as response:
-            data = json.loads(response.read().decode("utf-8"))
+            data = json.loads(response.read().decode("utf-8-sig"))
     except HTTPError as exc:
         if exc.code == 404:
             return {"status": "none"}

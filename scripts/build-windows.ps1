@@ -52,7 +52,9 @@ $updateConfig = [ordered]@{
     release_page_url = $ReleasePageUrl
     release_api_url = $ReleaseApiUrl
 }
-$updateConfig | ConvertTo-Json | Set-Content -Encoding UTF8 -Path $updateConfigTarget
+$updateConfigJson = $updateConfig | ConvertTo-Json
+$utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+[System.IO.File]::WriteAllText($updateConfigTarget, $updateConfigJson, $utf8NoBom)
 
 if ($UpdateChannel -eq "china") {
     $channelLabel = "china"
