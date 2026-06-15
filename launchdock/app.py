@@ -1140,10 +1140,8 @@ def is_checked_state(state: object) -> bool:
 
 
 def set_switch_checked_without_animation(switch: SwitchButton, checked: bool) -> None:
+    switch.setChecked(checked)
     switch.indicator.slideAni.stop()
-    switch.indicator.blockSignals(True)
-    switch.indicator.setChecked(checked)
-    switch.indicator.blockSignals(False)
     switch.indicator.setSliderX(25 if checked else 5)
 
 
