@@ -44,10 +44,30 @@ class DockStorageTest(unittest.TestCase):
             config_file = Path(temp_dir) / "config" / "config.json"
 
             with patch("launchdock.storage.APP_CONFIG_FILE", config_file):
-                self.assertEqual(load_user_settings(), {"theme": "dark", "language": "zh_cn"})
+                self.assertEqual(
+                    load_user_settings(),
+                    {"theme": "dark", "language": "zh_cn", "auto_check_updates": True},
+                )
                 save_user_setting("theme", "system")
                 save_user_setting("language", "es")
-                self.assertEqual(load_user_settings(), {"theme": "system", "language": "es"})
+                save_user_setting("auto_check_updates", False)
+                self.assertEqual(
+                    load_user_settings(),
+                    {"theme": "system", "language": "es", "auto_check_updates": False},
+                )
+
+    def test_invalid_auto_update_setting_falls_back_to_enabled(self) -> None:
+        with TemporaryDirectory() as temp_dir:
+            config_file = Path(temp_dir) / "config" / "config.json"
+
+            with patch("launchdock.storage.APP_CONFIG_FILE", config_file):
+                config_file.parent.mkdir(parents=True, exist_ok=True)
+                config_file.write_text(
+                    json.dumps({"settings": {"auto_check_updates": "no"}}),
+                    encoding="utf-8",
+                )
+
+                self.assertTrue(load_user_settings()["auto_check_updates"])
 
     def test_language_setting_changes_core_text(self) -> None:
         self.assertEqual(tr("en", "settings_title"), "LaunchDock Settings")

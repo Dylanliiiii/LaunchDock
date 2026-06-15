@@ -885,22 +885,61 @@ TEXT_EXTRA = {
 for language_key, values in TEXT_EXTRA.items():
     TEXT[language_key].update(values)
 
+AUTO_UPDATE_TEXT = {
+    "zh_cn": {
+        "auto_check_updates": "自动检查更新",
+        "auto_check_updates_desc": "启动后自动检查新版本；关闭后仍可手动检查。",
+        "auto_update_save_failed": "自动检查更新设置已临时应用，但无法保存：{error}",
+    },
+    "zh_tw": {
+        "auto_check_updates": "自動檢查更新",
+        "auto_check_updates_desc": "啟動後自動檢查新版本；關閉後仍可手動檢查。",
+        "auto_update_save_failed": "自動檢查更新設定已暫時套用，但無法儲存：{error}",
+    },
+    "en": {
+        "auto_check_updates": "Check for updates automatically",
+        "auto_check_updates_desc": "Check after startup; manual checks still work when this is off.",
+        "auto_update_save_failed": "The automatic update check setting was applied temporarily, but could not be saved: {error}",
+    },
+    "ja": {
+        "auto_check_updates": "更新を自動確認",
+        "auto_check_updates_desc": "起動後に新しいバージョンを確認します。オフでも手動確認は使えます。",
+        "auto_update_save_failed": "更新の自動確認設定は一時的に適用されましたが、保存できませんでした: {error}",
+    },
+    "ko": {
+        "auto_check_updates": "업데이트 자동 확인",
+        "auto_check_updates_desc": "시작 후 새 버전을 확인합니다. 꺼도 수동 확인은 사용할 수 있습니다.",
+        "auto_update_save_failed": "업데이트 자동 확인 설정은 임시로 적용되었지만 저장할 수 없습니다: {error}",
+    },
+    "es": {
+        "auto_check_updates": "Buscar actualizaciones automáticamente",
+        "auto_check_updates_desc": "Comprueba al iniciar; la comprobación manual sigue funcionando si se desactiva.",
+        "auto_update_save_failed": "La comprobación automática se aplicó temporalmente, pero no se pudo guardar: {error}",
+    },
+}
 
-def load_user_settings() -> dict[str, str]:
+for language_key, values in AUTO_UPDATE_TEXT.items():
+    TEXT[language_key].update(values)
+
+
+def load_user_settings() -> dict[str, object]:
     config = load_app_config()
     settings = config.get("settings")
     if not isinstance(settings, dict):
         settings = {}
     theme = str(settings.get("theme", "dark"))
     language = str(settings.get("language", "zh_cn"))
+    auto_check_updates = settings.get("auto_check_updates", True)
     if theme not in THEME_OPTIONS:
         theme = "dark"
     if language not in SUPPORTED_LANGUAGES:
         language = "zh_cn"
-    return {"theme": theme, "language": language}
+    if not isinstance(auto_check_updates, bool):
+        auto_check_updates = True
+    return {"theme": theme, "language": language, "auto_check_updates": auto_check_updates}
 
 
-def save_user_setting(key: str, value: str) -> None:
+def save_user_setting(key: str, value: object) -> None:
     config = load_app_config()
     settings = config.get("settings")
     if not isinstance(settings, dict):
@@ -1599,11 +1638,13 @@ class SettingsInterface(QWidget):
 
         self.theme_combo = ComboBox(self)
         self.language_combo = ComboBox(self)
+        self.auto_update_switch = SwitchButton(self)
         self.theme_key_by_text: dict[str, str] = {}
         self.language_key_by_text: dict[str, str] = {}
 
         self.theme_combo.currentTextChanged.connect(self.on_theme_changed)
         self.language_combo.currentTextChanged.connect(self.on_language_changed)
+        self.auto_update_switch.checkedChanged.connect(self.on_auto_update_changed)
 
         layout.addWidget(
             self.setting_card(
@@ -1619,6 +1660,14 @@ class SettingsInterface(QWidget):
                 title=self.app_window.text("language"),
                 description=self.app_window.text("language_desc"),
                 control=self.language_combo,
+            )
+        )
+        layout.addWidget(
+            self.setting_card(
+                icon=FluentIcon.SYNC,
+                title=self.app_window.text("auto_check_updates"),
+                description=self.app_window.text("auto_check_updates_desc"),
+                control=self.auto_update_switch,
             )
         )
         layout.addStretch(1)
@@ -1649,14 +1698,17 @@ class SettingsInterface(QWidget):
         self.language_key_by_text = {text: key for key, text in language_items.items()}
         self.theme_combo.blockSignals(True)
         self.language_combo.blockSignals(True)
+        self.auto_update_switch.blockSignals(True)
         self.theme_combo.clear()
         self.language_combo.clear()
         self.theme_combo.addItems(list(theme_items.values()))
         self.language_combo.addItems(list(language_items.values()))
         self.theme_combo.setCurrentText(theme_items[settings["theme"]])
         self.language_combo.setCurrentText(language_items[settings["language"]])
+        set_switch_checked_without_animation(self.auto_update_switch, bool(settings["auto_check_updates"]))
         self.theme_combo.blockSignals(False)
         self.language_combo.blockSignals(False)
+        self.auto_update_switch.blockSignals(False)
 
     def on_theme_changed(self, text: str) -> None:
         theme_key = self.theme_key_by_text.get(text)
@@ -1670,12 +1722,15 @@ class SettingsInterface(QWidget):
             return
         self.app_window.update_language_setting(language_key)
 
+    def on_auto_update_changed(self, checked: bool) -> None:
+        self.app_window.update_auto_check_updates_setting(checked)
+
 
 class LaunchDockApp(FluentWindow):
     def __init__(self) -> None:
         super().__init__()
         self.user_settings = load_user_settings()
-        setTheme(theme_from_setting(self.user_settings["theme"]))
+        setTheme(theme_from_setting(str(self.user_settings["theme"])))
         setThemeColor(ACCENT_COLOR)
 
         self.storage = DockStorage()
@@ -1718,13 +1773,14 @@ class LaunchDockApp(FluentWindow):
         self.load_data()
         self.switchTo(self.about_interface)
         QTimer.singleShot(0, lambda: self.navigationInterface.expand(False))
-        QTimer.singleShot(1200, lambda: self.check_for_updates(manual=False))
+        if self.should_auto_check_updates():
+            QTimer.singleShot(1200, lambda: self.check_for_updates(manual=False))
 
     def has_launch_dock(self) -> bool:
         return self.storage.dock_path is not None
 
     def text(self, key: str, **kwargs: object) -> str:
-        return tr(self.user_settings["language"], key, **kwargs)
+        return tr(str(self.user_settings["language"]), key, **kwargs)
 
     def adjust_navigation_expand_width(self) -> int:
         labels = [
@@ -1757,6 +1813,16 @@ class LaunchDockApp(FluentWindow):
             return
         self.settings_interface.refresh()
         self.show_warning(self.text("language_restart_title"), self.text("language_restart_desc"))
+
+    def update_auto_check_updates_setting(self, checked: bool) -> None:
+        self.user_settings["auto_check_updates"] = checked
+        try:
+            save_user_setting("auto_check_updates", checked)
+        except StorageError as exc:
+            self.show_warning(self.text("settings_save_failed"), self.text("auto_update_save_failed", error=exc))
+
+    def should_auto_check_updates(self) -> bool:
+        return bool(self.user_settings.get("auto_check_updates", True))
 
     def open_github(self) -> None:
         webbrowser.open_new_tab(GITHUB_REPO_URL)
