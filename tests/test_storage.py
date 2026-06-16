@@ -4,18 +4,15 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
-from launchdock.app import (
+from launchdock.i18n import load_user_settings, save_user_setting, tr
+from launchdock.targets import is_valid_target, normalized_target_text
+from launchdock.updates import (
     fetch_latest_release_from_git_http,
     git_info_refs_url,
     is_newer_version,
-    is_valid_target,
     latest_tag_from_git_info_refs,
     latest_tag_from_git_ls_remote,
     load_update_config,
-    load_user_settings,
-    normalized_target_text,
-    save_user_setting,
-    tr,
 )
 from launchdock.models import Link
 from launchdock.storage import DockStorage, StorageError, save_dock_path
@@ -209,7 +206,7 @@ class DockStorageTest(unittest.TestCase):
             def read(self) -> bytes:
                 return b"abc refs/tags/v1.0.0\ndef refs/tags/v9.9.9\n"
 
-        with patch("launchdock.app.urlopen", return_value=FakeResponse()):
+        with patch("launchdock.updates.urlopen", return_value=FakeResponse()):
             result = fetch_latest_release_from_git_http("https://example.com/repo.git", "https://example.com/releases")
 
         self.assertEqual(result["tag_name"], "v9.9.9")
@@ -222,7 +219,7 @@ class DockStorageTest(unittest.TestCase):
             config_file.write_text('{"update_channel": "china"}', encoding="utf-8-sig")
 
             load_update_config.cache_clear()
-            with patch("launchdock.app.update_config_paths", return_value=[config_file]):
+            with patch("launchdock.updates.update_config_paths", return_value=[config_file]):
                 self.assertEqual(load_update_config()["update_channel"], "china")
             load_update_config.cache_clear()
 

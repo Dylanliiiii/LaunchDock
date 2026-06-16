@@ -1,5 +1,37 @@
 # Development Log
 
+## 2026-06-16 23:38:24 +08:00
+
+### 修改范围
+
+- LaunchDock 主界面代码结构优化
+- 多语言、更新检查、启动目标和图标处理逻辑拆分
+
+### 涉及文件
+
+- `launchdock/app.py`
+- `launchdock/i18n.py`
+- `launchdock/updates.py`
+- `launchdock/targets.py`
+- `launchdock/icons.py`
+- `tests/test_storage.py`
+- `development-log.md`
+
+### 具体内容
+
+- 将多语言文本、语言选择、主题选项和用户设置读写逻辑从 `launchdock/app.py` 拆分到 `launchdock/i18n.py`。
+- 将版本比较、Git tag 解析、更新配置读取和 Release 检查逻辑拆分到 `launchdock/updates.py`。
+- 将 URL / 本地文件目标识别、校验和打开逻辑拆分到 `launchdock/targets.py`。
+- 将应用图标加载和纯色背景临时透明化处理逻辑拆分到 `launchdock/icons.py`。
+- 保持 `launchdock/app.py` 继续负责 PySide6 + QFluentWidgets 界面布局、页面组件和窗口交互，不改变现有布局与功能入口。
+- 调整测试导入路径，让现有纯逻辑测试直接覆盖拆分后的模块。
+
+### 验证情况
+
+- 已运行 `python -m unittest discover -s tests`，19 个测试通过。
+- 已运行 `python -m compileall launchdock tests`，编译检查通过。
+- 已运行 Qt offscreen 冒烟测试，确认 `LaunchDockApp` 可以创建，窗口标题仍为 `LaunchDock`，默认页面仍为 `aboutInterface`。
+
 ## 2026-06-16 20:51:28 +08:00
 
 ### 修改范围
