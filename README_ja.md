@@ -128,11 +128,12 @@ Inno Setup 6 でインストーラーを作成します。
 
 ## 開発メモ
 
-- UI 層: `launchdock/app.py`
+- UI 入口とページコンポーネント: `launchdock/app.py`
+- 多言語、更新確認、起動対象処理、アイコン処理: `launchdock/i18n.py`、`launchdock/updates.py`、`launchdock/targets.py`、`launchdock/icons.py`
 - ビジネスモデル: `launchdock/models.py`
 - ローカル保存: `launchdock/storage.py`
 - 協作ルール: `AGENTS.md`
-- コードまたはドキュメントを変更した場合は、`development-log.md` を更新します。
+- コードまたはドキュメントを変更した場合は、`development-log.md` を更新し、README、協作ルール、プロジェクト Skill も同期が必要か確認します。
 
 ## License
 

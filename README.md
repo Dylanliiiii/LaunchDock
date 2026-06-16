@@ -100,12 +100,16 @@ LaunchDock/
 
 关键代码文件说明：
 
-- `launchdock/app.py`：PySide6 + QFluentWidgets 图形界面，包含主窗口、项目卡片、启动项管理、设置页、关于页和更新检查入口。
+- `launchdock/app.py`：PySide6 + QFluentWidgets 图形界面，包含主窗口、项目卡片、启动项管理、设置页、关于页和各页面交互入口。
+- `launchdock/i18n.py`：多语言文本、语言选项、主题选项和用户设置读写逻辑。
+- `launchdock/updates.py`：版本比较、Git tag 解析、更新配置读取和 Release 检查逻辑。
+- `launchdock/targets.py`：URL / 本地文件目标识别、校验和打开逻辑。
+- `launchdock/icons.py`：应用图标加载，以及图标缺少透明通道时的临时纯色背景剔除逻辑。
 - `launchdock/models.py`：项目和启动项的数据模型，定义项目名称、链接地址、是否默认启动、排序、创建时间和更新时间等结构。
 - `launchdock/storage.py`：本地启动坞读写逻辑，负责 `launchdock.json`、`projects/<项目文件夹>/project.json`、项目文件夹命名、排序和持久化配置。
 - `launchdock/__init__.py`：应用包基础信息，目前包含版本号。
 - `main.py`：从源码运行时的轻量入口，会启动 LaunchDock 桌面应用。
-- `tests/test_storage.py`：存储层和部分更新检查相关逻辑的单元测试。
+- `tests/test_storage.py`：存储层、设置、启动目标和更新检查相关逻辑的单元测试。
 
 打包与发布相关文件说明：
 
@@ -169,11 +173,12 @@ Release 正文应说明国际版更新源为 GitHub，国内版更新源为 CNB 
 
 ## 开发说明
 
-- UI 层集中在 `launchdock/app.py`。
+- UI 层主入口和页面组件位于 `launchdock/app.py`。
+- 多语言、更新检查、启动目标处理和图标处理分别位于 `launchdock/i18n.py`、`launchdock/updates.py`、`launchdock/targets.py` 和 `launchdock/icons.py`。
 - 业务模型位于 `launchdock/models.py`。
 - 本地存储逻辑位于 `launchdock/storage.py`。
 - 项目协作约定见 `AGENTS.md`。
-- 每次修改代码或文档后，需要同步更新 `development-log.md`。
+- 每次修改代码或文档后，需要同步更新 `development-log.md`，并检查 README、项目协作说明和相关 Skill 是否也需要同步。
 
 ## License
 

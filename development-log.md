@@ -1,5 +1,32 @@
 # Development Log
 
+## 2026-06-16 23:55:44 +08:00
+
+### 修改范围
+
+- README 项目结构说明
+- 项目协作规则和项目专属 Skill 检查清单
+
+### 涉及文件
+
+- `README.md`
+- `README_en.md`
+- `README_ja.md`
+- `AGENTS.md`
+- `.agents/skills/launchdock-project/SKILL.md`
+- `development-log.md`
+
+### 具体内容
+
+- 补充中文、英文、日文 README 的开发说明，记录 `launchdock/i18n.py`、`launchdock/updates.py`、`launchdock/targets.py` 和 `launchdock/icons.py` 的模块职责，确保说明文档与当前代码结构一致。
+- 在 `AGENTS.md` 中新增要求：每次修改代码后，除运行验证外，还必须检查 README、项目协作说明、项目专属 Skill、打包脚本说明和其他相关文档是否需要同步。
+- 在 `launchdock-project` 项目专属 Skill 的使用原则和检查清单中加入同样的文档同步检查要求，避免后续结构性修改后遗漏说明文件。
+
+### 验证情况
+
+- 已运行文档内容检索，确认 README、`AGENTS.md` 和项目专属 Skill 中已出现新增模块职责与文档同步检查说明。
+- 本次为文档和协作规则更新，未运行应用单元测试。
+
 ## 2026-06-16 23:38:24 +08:00
 
 ### 修改范围

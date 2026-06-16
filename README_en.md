@@ -128,11 +128,12 @@ The release body should note that the global package uses GitHub as the update s
 
 ## Development Notes
 
-- UI layer: `launchdock/app.py`
+- UI entry and page components: `launchdock/app.py`
+- Internationalization, update checks, launch target handling, and icon handling: `launchdock/i18n.py`, `launchdock/updates.py`, `launchdock/targets.py`, and `launchdock/icons.py`
 - Business models: `launchdock/models.py`
 - Local storage: `launchdock/storage.py`
 - Collaboration rules: `AGENTS.md`
-- Update `development-log.md` whenever code or documentation changes.
+- Update `development-log.md` whenever code or documentation changes, and check whether README files, collaboration rules, or project skills also need updates.
 
 ## License
 
