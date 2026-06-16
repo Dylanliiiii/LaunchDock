@@ -68,10 +68,11 @@ description: 仅用于 LaunchDock 项目的更新、推送、打包和双平台�
 1. 读取 `AGENTS.md` 和相关 Skill。
 2. 修改代码或文档。
 3. 同步更新 `development-log.md`；日常更新标题使用普通时间，不写 `Version x.x.x`。
-4. 运行与改动风险匹配的验证。
-5. 检查 `git status --short` 和关键 diff。
-6. `git add`、`git commit`。
-7. `git push origin main`。如果遇到 safe.directory 问题，使用：
+4. 如果代码结构、入口命令、模块职责、打包流程或功能行为有变化，检查并同步更新 README、`AGENTS.md`、项目专属 Skill、打包脚本说明和其他相关文档。
+5. 运行与改动风险匹配的验证。
+6. 检查 `git status --short` 和关键 diff。
+7. `git add`、`git commit`。
+8. `git push origin main`。如果遇到 safe.directory 问题，使用：
 
 ```powershell
 git -c safe.directory=<仓库绝对路径> push origin main
@@ -257,5 +258,6 @@ https://cnb.cool/DylanLIIIII/LaunchDock/-/releases/tag/v版本号
 完成普通更新或 release 后：
 
 - 确认 `git status --short` 为空，除非明确说明剩余文件。
+- 确认 README、`AGENTS.md`、项目专属 Skill、打包脚本说明等相关文档没有因本次代码结构、入口命令、模块职责、打包流程或功能行为变化而过期。
 - 把 commit、tag、push、Release URL 或手动发布材料告诉开发者。
 - 如果本次没有运行某项验证，说明原因。

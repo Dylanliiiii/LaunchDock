@@ -1,5 +1,26 @@
 # Development Log
 
+## 2026-06-17 00:00:58 +08:00
+
+### 修改范围
+
+- 项目专属发布 Skill 普通更新流程
+
+### 涉及文件
+
+- `.agents/skills/launchdock-release/SKILL.md`
+- `development-log.md`
+
+### 具体内容
+
+- 在 `launchdock-release` 的普通更新流程中补充文档同步检查：当代码结构、入口命令、模块职责、打包流程或功能行为变化时，需要检查并同步 README、`AGENTS.md`、项目专属 Skill、打包脚本说明和其他相关文档。
+- 在 `launchdock-release` 的收尾检查中补充确认项，避免普通 push 或正式 release 前遗漏已经过期的说明文档。
+
+### 验证情况
+
+- 已运行文本检索，确认 `launchdock-release` 中的普通更新流程和收尾检查均包含文档同步要求。
+- 本次为项目专属 Skill 文档更新，未运行应用单元测试。
+
 ## 2026-06-16 23:55:44 +08:00
 
 ### 修改范围
