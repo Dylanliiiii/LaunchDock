@@ -76,6 +76,47 @@ LaunchDock 不把用户项目数据写进程序目录。用户需要选择一个
 - 每个项目一个独立文件夹。
 - 每个项目的链接数据保存在自己的 `project.json` 中。
 
+## 项目源码结构
+
+下面是仓库中主要目录和文件的用途，方便第一次阅读或参与开发时快速定位：
+
+```text
+LaunchDock/
+  .agents/                 项目专属 Codex Skill，记录协作、开发和发布流程
+  .github/workflows/       GitHub Actions 工作流，用于同步 CNB Release 等自动化流程
+  assets/                  应用资源文件，目前主要保存软件图标
+  build/                   打包过程生成的临时文件，不属于用户数据
+  dist/                    Windows 压缩包和安装包等发布产物
+  installer/               Inno Setup 安装包配置
+  launchdock/              应用主代码包
+  scripts/                 打包、安装包生成和 Release 同步脚本
+  tests/                   自动化测试
+  AGENTS.md                项目协作说明和产品/技术约定
+  development-log.md       开发记录，每次代码或文档修改后都需要更新
+  LaunchDock.spec          PyInstaller 打包配置
+  main.py                  应用入口文件
+  requirements.txt         Python 依赖列表
+```
+
+关键代码文件说明：
+
+- `launchdock/app.py`：PySide6 + QFluentWidgets 图形界面，包含主窗口、项目卡片、启动项管理、设置页、关于页和更新检查入口。
+- `launchdock/models.py`：项目和启动项的数据模型，定义项目名称、链接地址、是否默认启动、排序、创建时间和更新时间等结构。
+- `launchdock/storage.py`：本地启动坞读写逻辑，负责 `launchdock.json`、`projects/<项目文件夹>/project.json`、项目文件夹命名、排序和持久化配置。
+- `launchdock/__init__.py`：应用包基础信息，目前包含版本号。
+- `main.py`：从源码运行时的轻量入口，会启动 LaunchDock 桌面应用。
+- `tests/test_storage.py`：存储层和部分更新检查相关逻辑的单元测试。
+
+打包与发布相关文件说明：
+
+- `scripts/build-windows.ps1`：使用 PyInstaller 生成 Windows 绿色压缩包，并写入不同渠道的更新源配置。
+- `scripts/build-installer.ps1`：调用 Inno Setup 6 生成 Windows 安装包。
+- `scripts/sync-cnb-release.ps1`：在需要时同步 GitHub Release 附件到 CNB Release。
+- `installer/launchdock.iss`：Inno Setup 安装包脚本模板。
+- `.github/workflows/sync-cnb-release.yml`：GitHub Release 发布或编辑后同步 CNB Release 的工作流。
+
+`build/`、`dist/` 和 `__pycache__/` 都是本地生成内容；其中 `dist/` 用于保存发布产物，`build/` 和 `__pycache__/` 通常不需要手动维护。
+
 ## 从源码运行
 
 建议使用 Python 虚拟环境：
